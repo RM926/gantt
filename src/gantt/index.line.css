@@ -1,0 +1,27 @@
+.gantt {
+  border: 1px solid red;
+}
+
+.gantt_expander {
+  border: 1px solid burlywood;
+}
+
+.gantt_expander_column_header {
+  border: 1px solid red;
+}
+
+.gantt_expander_column_list {
+  border: 1px solid blue;
+}
+
+.gantt_chart {
+  border: 1px solid yellowgreen;
+}
+
+.gantt_calendar_header {
+  border: 1px solid rgb(0, 255, 136);
+}
+
+.gantt_calendar_list {
+  border: 1px solid royalblue;
+}

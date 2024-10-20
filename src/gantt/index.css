@@ -1,0 +1,81 @@
+.gantt {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.gantt_expander {
+  display: flex;
+  /* width: 200px; */
+}
+
+.gantt_expander_column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 150px;
+}
+
+.gantt_expander_column_header {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.gantt_expander_column_list {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  flex: 1;
+  overflow: auto;
+}
+
+.gantt_expander_list_cell {
+  border: 1px solid rgb(141, 141, 233)
+}
+
+.gantt_chart {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.gantt_calendar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gantt_calendar_header {
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%
+}
+
+.gantt_calendar_list {
+  box-sizing: border-box;
+  flex: 2;
+  width: 100%;
+  overflow: auto;
+  overflow-y: hidden
+}
+
+
+.gantt_timeline {
+  flex: 1;
+  width: 100%;
+  overflow: auto;
+}
+
+.gantt_timeline_cell {
+  border: 1px solid burlywood;
+}
+
+.gantt_expander_column_list::-webkit-scrollbar {
+  display: none;
+}
+
+.gantt_calendar_list::-webkit-scrollbar {
+  display: none;
+}
