@@ -9,6 +9,7 @@ import ExpanderListCell, {
 import TimelineCell, {
   TimelineCellConfig,
 } from "../chart/timeline/timeline_cell";
+import { ReturnMergeTimeline } from "../utils/handle";
 
 const App = (props: { a: number }) => {
   const [count, setCount] = useState(1);
@@ -27,8 +28,39 @@ const App = (props: { a: number }) => {
   );
 };
 
-const TimelineCellRender = (props: { mergeTimeline: string }) => {
-  return <div style={{ fontSize: 12 }}>{props.mergeTimeline}</div>;
+const TimelineCellRender = (props: { mergeTimeline: ReturnMergeTimeline }) => {
+  const { mergeTimeline } = props;
+  const {
+    cellBeginCount,
+    cellFinishCount,
+    cellBottomCount,
+    cellTopCount,
+    startTime,
+    endTime,
+  } = mergeTimeline;
+  return (
+    <div
+      style={{
+        fontSize: 12,
+        display: "grid",
+        width: "100%",
+        height: "100%",
+        gridTemplateColumns: "repeat(2,100px)",
+        gridTemplateRows: "repeat(3)",
+      }}
+    >
+      {[
+        cellBeginCount,
+        cellFinishCount,
+        cellBottomCount,
+        cellTopCount,
+        startTime,
+        endTime,
+      ].map((t, i) => {
+        return <div key={i}>{t}</div>;
+      })}
+    </div>
+  );
 };
 
 export class THeader extends ExpanderHeader {
@@ -78,7 +110,6 @@ export class TTimelineListCell extends TimelineCell {
   // 创建新的内容
   updateRender(it: TimelineCell) {
     if (!this.root) this.root = createRoot(it.cellElement!);
-    const mergeTimeline = JSON.stringify(it.mergeTimeline);
-    this.root.render(<TimelineCellRender mergeTimeline={mergeTimeline} />);
+    this.root.render(<TimelineCellRender mergeTimeline={it.mergeTimeline} />);
   }
 }

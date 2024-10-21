@@ -15,7 +15,7 @@ import {
 import "./index.css";
 // import "./index.line.css";
 import MoveOverflowScroll from "./utils/move_overflow_scroll";
-import { getTimestampLineByTimeRange } from "@/components/Gantt";
+import { getTimestampLineByTimeRange } from "./utils/handle";
 import {
   getMergeTimelinesSourceData,
   getTimeRangeTime,
@@ -24,7 +24,6 @@ import {
   updateGanttDataSource,
 } from "./utils/handle";
 import Column from "./expander/column";
-import { XExpanderListCell, XHeader } from "./demo";
 import { getRandomClass } from "./utils/document";
 import GanttTimeline from "./chart/timeline";
 import Calender from "./chart/calender";
@@ -186,8 +185,9 @@ export class Gantt {
     if (timeRange) this.timeRange = timeRange;
     this.timestampLine = getTimestampLines(
       getTimestampLineByTimeRange({
-        timeRange:
-          this.timeRange ?? getTimeRangeTime({ dataSource: this.dataSource! }),
+        timeRange: this.timeRange?.length
+          ? this.timeRange
+          : getTimeRangeTime({ dataSource: this.dataSource! }),
       })
     );
 
@@ -201,7 +201,7 @@ export class Gantt {
       });
     }
 
-    console.log(this.mergeTimelineSourceData, "mergeTimelinesSourceData");
+    // console.log(this.mergeTimelineSourceData, "mergeTimelinesSourceData");
   }
 
   scrollControl(payload: {
