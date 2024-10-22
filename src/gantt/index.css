@@ -30,10 +30,6 @@
   overflow: auto;
 }
 
-.gantt_expander_list_cell {
-  border: 1px solid rgb(141, 141, 233)
-}
-
 .gantt_chart {
   display: flex;
   flex-direction: column;
@@ -68,8 +64,10 @@
   overflow: auto;
 }
 
-.gantt_timeline_cell {
-  border: 1px solid burlywood;
+.gantt_timeline_cell_left_range,
+.gantt_timeline_cell_right_range {
+  width: 30px;
+  height: 100%;
 }
 
 .gantt_expander_column_list::-webkit-scrollbar {

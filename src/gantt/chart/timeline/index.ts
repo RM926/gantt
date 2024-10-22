@@ -5,7 +5,7 @@ import MoveOverflowScroll, {
   MoveDirection,
   MoveScrollOverflowConfig,
 } from "../../utils/move_overflow_scroll";
-import TimelineCell, { TimelineCellConfig } from "./timeline_cell";
+import TimelineCell, { TimelineCellConfig } from "./cell";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;

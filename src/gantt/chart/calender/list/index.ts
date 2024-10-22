@@ -40,7 +40,7 @@ class CalenderList {
   }
 
   removeCellInContainer() {
-    const [l, r] = this.containerRange;
+    const [, , l, r] = this.containerRange;
     this.listCellMap.forEach((cell) => {
       const { left, right, id } = cell.timestamp!;
       if (
@@ -107,6 +107,7 @@ class CalenderList {
     if (this?.gantt?.timestampLine) {
       for (let i = 0; i < this.gantt?.timestampLine?.length; i++) {
         const { left, right, id } = this.gantt?.timestampLine[i];
+
         if (
           getContainType({
             contain: [l, r],

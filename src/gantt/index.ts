@@ -13,7 +13,7 @@ import {
   TimestampLine,
 } from "./index.d";
 import "./index.css";
-// import "./index.line.css";
+import "./index.line.css";
 import MoveOverflowScroll from "./utils/move_overflow_scroll";
 import { getTimestampLineByTimeRange } from "./utils/handle";
 import {
@@ -29,9 +29,12 @@ import GanttTimeline from "./chart/timeline";
 import Calender from "./chart/calender";
 import ExpanderHeader from "./expander/column/header";
 import ExpanderListCell from "./expander/column/list/cell";
-import TimelineCell from "./chart/timeline/timeline_cell";
+import TimelineCell from "./chart/timeline/cell";
 import CalenderHeader from "./chart/calender/header";
 import CalenderListCell from "./chart/calender/list/cell";
+import { TimelineCellContent } from "./chart/timeline/cell/content";
+import { TimelineCellLeftRange } from "./chart/timeline/cell/left_range";
+import { TimelineCellRightRange } from "./chart/timeline/cell/right_range";
 
 export enum ScrollControlSource {
   EXPANDER,
@@ -52,6 +55,9 @@ export type GanttConfig = {
     };
     timeline: {
       cell: TimelineCell;
+      cellContent: TimelineCellContent;
+      leftRange: TimelineCellLeftRange;
+      rightRange: TimelineCellRightRange;
     };
     calender: {
       header: CalenderHeader;

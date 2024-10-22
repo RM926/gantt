@@ -1,7 +1,7 @@
 "use client";
 import Gantt from "@/gantt";
 import { data } from "@/gantt/data_source";
-import { TTimelineListCell } from "@/gantt/demo";
+import { TTimelineCellContent, TTimelineListCell } from "@/gantt/demo";
 import { useEffect, useRef } from "react";
 
 const Page = () => {
@@ -14,7 +14,8 @@ const Page = () => {
         dataSource: data,
         enhance: {
           timeline: {
-            cell: TTimelineListCell,
+            // cell: TTimelineListCell,
+            cellContent: TTimelineCellContent,
           },
         },
       });

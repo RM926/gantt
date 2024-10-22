@@ -6,10 +6,12 @@ import { useState } from "react";
 import ExpanderListCell, {
   ExpanderListCellConfig,
 } from "../expander/column/list/cell";
-import TimelineCell, {
-  TimelineCellConfig,
-} from "../chart/timeline/timeline_cell";
+import TimelineCell, { TimelineCellConfig } from "../chart/timeline/cell";
 import { ReturnMergeTimeline } from "../utils/handle";
+import {
+  TimelineCellContent,
+  TimelineCellContentConfig,
+} from "../chart/timeline/cell/content";
 
 const App = (props: { a: number }) => {
   const [count, setCount] = useState(1);
@@ -111,5 +113,22 @@ export class TTimelineListCell extends TimelineCell {
   updateRender(it: TimelineCell) {
     if (!this.root) this.root = createRoot(it.cellElement!);
     this.root.render(<TimelineCellRender mergeTimeline={it.mergeTimeline} />);
+  }
+}
+
+export class TTimelineCellContent extends TimelineCellContent {
+  root?: any;
+  constructor(config: TimelineCellContentConfig) {
+    super(config);
+  }
+
+  // 首次渲染的内容
+  render(it: TimelineCellContent) {}
+
+  // 创建新的内容
+  updateRender(it: TimelineCellContent) {
+    if (!this.root) this.root = createRoot(it.element!);
+    const mergeTimeline = it.timelineCell?.mergeTimeline! ?? {};
+    this.root.render(<TimelineCellRender mergeTimeline={mergeTimeline} />);
   }
 }
