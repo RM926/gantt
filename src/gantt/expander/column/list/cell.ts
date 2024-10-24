@@ -29,13 +29,13 @@ class ExpanderListCell {
   }
 
   updateContainer() {
-    const { top, bottom } = this.mergeTimelineDataSource!;
+    const { top, mergeTimelines } = this.mergeTimelineDataSource!;
     const { height: cellHeight, width: cellWidth } =
       this.expanderList?.gantt?.styles?.cell!;
     const styles = {
       boxSizing: "border-box",
       position: "absolute",
-      height: `${(bottom - top) * cellHeight}px`,
+      height: `${mergeTimelines?.length * cellHeight}px`,
       width: `${cellWidth}px`,
       top: `${top * cellHeight}px`,
     };
@@ -59,8 +59,9 @@ class ExpanderListCell {
   // to render合并到updateRender中
   render(it: ExpanderListCell) {
     const div = document.createElement("div");
-    const { title } = this.mergeTimelineDataSource!;
-    div.innerHTML = title;
+    const { title, expandable, expand, fatherId } =
+      this.mergeTimelineDataSource!;
+    div.innerHTML = `${title}/${expandable}/${expand}`;
     this.cellElement?.append(div);
   }
 

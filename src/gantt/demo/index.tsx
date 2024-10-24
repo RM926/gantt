@@ -39,29 +39,35 @@ const TimelineCellRender = (props: { mergeTimeline: ReturnMergeTimeline }) => {
     cellTopCount,
     startTime,
     endTime,
+    id,
   } = mergeTimeline;
   return (
-    <div
-      style={{
-        fontSize: 12,
-        display: "grid",
-        width: "100%",
-        height: "100%",
-        gridTemplateColumns: "repeat(2,100px)",
-        gridTemplateRows: "repeat(3)",
-      }}
-    >
-      {[
-        cellBeginCount,
-        cellFinishCount,
-        cellBottomCount,
-        cellTopCount,
-        startTime,
-        endTime,
-      ].map((t, i) => {
-        return <div key={i}>{t}</div>;
-      })}
-    </div>
+    <>
+      <div style={{ fontSize: 12, wordBreak: "break-all" }}>
+        {JSON.stringify(mergeTimeline)}
+      </div>
+      {/* <div
+        style={{
+          fontSize: 12,
+          display: "grid",
+          width: "100%",
+          height: "100%",
+          gridTemplateColumns: "repeat(3,120px)",
+          gridTemplateRows: "repeat(2)",
+        }}
+      >
+        {[
+          cellBeginCount,
+          cellFinishCount,
+          cellBottomCount,
+          cellTopCount,
+          startTime,
+          endTime,
+        ].map((t, i) => {
+          return <div key={i}>{t}</div>;
+        })}
+      </div> */}
+    </>
   );
 };
 

@@ -21,6 +21,11 @@ export const updateGanttDataSource = (payload: {
     cellBeginCount,
     ...timeline
   } = returnMergeTimeline;
+  console.log(
+    returnMergeTimeline,
+    mergeTimelinesSourceData,
+    "return MergeTimeline"
+  );
 
   // console.log(
   //   fatherId,
@@ -28,44 +33,48 @@ export const updateGanttDataSource = (payload: {
   //   "fatherId,mergeTimelinesSourceData"
   // );
 
-  const downRowIndex = mergeTimelinesSourceData.findIndex((d) => {
-    const { top, bottom } = d;
+  function findDownRow(mergeTimelineDataSource: MergeTimelineDataSource[]) {
+    for (const m of mergeTimelineDataSource) {
+      console.log(m, "tt");
+      const { top, bottom, id } = m;
+      const isContain = judgeContainType({
+        contain: [top, bottom],
+        contained: [cellTopCount, cellBottomCount],
+        type: ContainTypeEnum.CONTAIN,
+      });
+      console.log(m, isContain, top, bottom, cellTopCount, cellBottomCount);
+      if (id === "1-1-1") {
+        console.log(isContain, "inter");
+        return;
+      }
+      if (m?.children?.length)
+        findDownRow(m.children as MergeTimelineDataSource[]);
+    }
+  }
 
-    const isContain = judgeContainType({
-      contain: [top, bottom],
-      contained: [cellTopCount, cellBottomCount],
-      type: ContainTypeEnum.CONTAIN,
-    });
-    // console.log(
-    //   isContain,
-    //   [top, bottom],
-    //   [cellTopCount, cellBottomCount],
-    //   "isContain, [top, bottom], [cellTopCount, cellBottomCount]"
-    // );
-    return isContain;
-  });
+  const downRow = findDownRow(mergeTimelinesSourceData);
+  console.log(downRow);
+  // const moveRowIndex = mergeTimelinesSourceData.findIndex((m) => {
+  //   return m.id === returnFatherId;
+  // });
 
-  const moveRowIndex = mergeTimelinesSourceData.findIndex((m) => {
-    return m.id === returnFatherId;
-  });
+  // console.log(downRowIndex, moveRowIndex, "downRowIndex,moveRowIndex");
 
-  console.log(downRowIndex, moveRowIndex, "downRowIndex,moveRowIndex");
+  // const draftDataSource = JSON.parse(
+  //   JSON.stringify(dataSource)
+  // ) as GanttSourceData[];
 
-  const draftDataSource = JSON.parse(
-    JSON.stringify(dataSource)
-  ) as GanttSourceData[];
+  // const moveRow = draftDataSource[moveRowIndex];
+  // moveRow.timelines = moveRow.timelines.filter(
+  //   (t) => t.id !== returnMergeTimeline.id
+  // );
+  // if (!draftDataSource[downRowIndex]?.timelines?.length)
+  //   draftDataSource[downRowIndex].timelines = [];
+  // draftDataSource[downRowIndex].timelines.push(timeline);
 
-  const moveRow = draftDataSource[moveRowIndex];
-  moveRow.timelines = moveRow.timelines.filter(
-    (t) => t.id !== returnMergeTimeline.id
-  );
-  if (!draftDataSource[downRowIndex]?.timelines?.length)
-    draftDataSource[downRowIndex].timelines = [];
-  draftDataSource[downRowIndex].timelines.push(timeline);
+  // console.log(draftDataSource, dataSource, "draftDataSource, dataSource");
 
-  console.log(draftDataSource, dataSource, "draftDataSource, dataSource");
-
-  return draftDataSource;
+  // return draftDataSource;
 };
 
 export const getTimeRangeTime = (payload: {
@@ -121,7 +130,7 @@ export const getTimestampLines = (timestampLines: number[]) => {
 };
 
 export type ReturnMergeTimeline = GanttSourceDataTimeline & {
-  fatherId: number | string;
+  path: (number | string)[];
   /** X方向 */
   cellBeginCount: number;
   cellFinishCount: number;
@@ -137,7 +146,7 @@ export const getMergeTimelines = (payload: {
   /** 上一行数据的垂直方向的行数 */
   verticalCurrentRowIdx: number;
   cellGap: number;
-  fatherId: string | number;
+  path: (string | number)[];
 }): ReturnMergeTimeline[][] => {
   const {
     timelines,
@@ -145,7 +154,7 @@ export const getMergeTimelines = (payload: {
     timestampLine,
     verticalCurrentRowIdx,
     cellGap,
-    fatherId,
+    path,
   } = payload;
   const currentBeginTime = timestampLine[0];
   const mergeTimelinesArray: ReturnMergeTimeline[][] = [];
@@ -221,7 +230,7 @@ export const getMergeTimelines = (payload: {
       cellFinishCount,
       cellTopCount: topIdx,
       cellBottomCount: topIdx + 1,
-      fatherId,
+      path,
     };
 
     if (idx === -1) {

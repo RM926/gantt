@@ -1,3 +1,4 @@
+import { MergeTimelineDataSource } from "../../../gantt/index.d";
 import Gantt, { GanttConfig } from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
 import { ReturnMergeTimeline } from "../../utils/handle";
@@ -168,43 +169,49 @@ class GanttTimeline {
     });
   }
 
+  renderTimeline(mergeTimeline: ReturnMergeTimeline) {
+    const { id } = mergeTimeline;
+
+    const oldCell = this.timelineCellMap.get(id);
+    if (oldCell) {
+      if (!oldCell.moving) {
+        oldCell.update({ mergeTimeline });
+      }
+    } else {
+      const cell = this.createCell({
+        mergeTimeline,
+        ganttTimeline: this,
+      });
+      this.timelineCellMap.set(id, cell);
+      cell.update();
+    }
+  }
+
   updateCellToContainer() {
     // 添加
-    const [t, b, l, r] = this.containerRange;
-    if (this.gantt?.mergeTimelineSourceData) {
-      for (let i = 0; i < this.gantt.mergeTimelineSourceData.length; i++) {
-        const { top, bottom, mergeTimelines } =
-          this.gantt.mergeTimelineSourceData[i];
-        if (
-          getContainType({
-            contain: [t, b],
-            contained: [top, bottom],
-          }) !== ContainTypeEnum.NONE
-        ) {
-          mergeTimelines.forEach((mergeTimelineArr) => {
-            mergeTimelineArr.forEach((mergeTimeline) => {
-              const { id } = mergeTimeline;
-              if (this.judgeContain(mergeTimeline, [t, b, l, r])) {
-                const oldCell = this.timelineCellMap.get(id);
-                if (oldCell) {
-                  if (!oldCell.moving) {
-                    oldCell.update({ mergeTimeline });
-                  }
-                } else {
-                  const cell = this.createCell({
-                    mergeTimeline,
-                    ganttTimeline: this,
-                  });
-                  this.timelineCellMap.set(id, cell);
-                  cell.update();
-                }
-              }
-            });
+    const [t, b] = this.containerRange;
+    const _that = this;
+    function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
+      for (const d of mergeTimelineDataSource) {
+        const { mergeTimelines, children, top } = d;
+        // console.log(mergeTimelines, "mergeTimelines");
+        mergeTimelines.forEach((mergeTimeline) => {
+          mergeTimeline.forEach((m) => {
+            // console.log(m, "m");
+            if (_that.judgeContain(m, _that.containerRange)) {
+              _that.renderTimeline(m);
+            }
+            if (top > b) return;
           });
+        });
+
+        if (children?.length) {
+          renderLoop(children as MergeTimelineDataSource[]);
         }
-        if (top >= b) break;
       }
     }
+
+    renderLoop(this.gantt?.mergeTimelineSourceData ?? []);
   }
 
   /**

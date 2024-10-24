@@ -5,6 +5,7 @@ import {
 import { Gantt } from "../../../../gantt/index";
 import ExpanderListCell from "./cell";
 import Column from "..";
+import { MergeTimelineDataSource } from "@/gantt";
 
 type ListConfig = {
   container: HTMLElement;
@@ -20,7 +21,7 @@ class ExpanderList {
   container?: ListConfig["container"];
   innerContainer?: HTMLElement;
 
-  listCellMap = new Map<string, ExpanderListCell>();
+  listCellMap = new Map<string | number, ExpanderListCell>();
   //  [t, b, l, r]
   containerRange: number[] = [0, 0, 0, 0];
 
@@ -48,7 +49,7 @@ class ExpanderList {
         }) === ContainTypeEnum.NONE
       ) {
         cell.remove();
-        this.listCellMap.delete(id + "");
+        this.listCellMap.delete(id);
       }
     });
   }
@@ -99,38 +100,51 @@ class ExpanderList {
     });
   }
 
+  renderExpanderCell(mergeTimelineDataSource: MergeTimelineDataSource) {
+    const { id } = mergeTimelineDataSource;
+
+    const oldExpanderCell = this.listCellMap.get(id);
+    if (oldExpanderCell) {
+      oldExpanderCell.update({
+        mergeTimelineDataSource,
+      });
+      return;
+    }
+    const expanderCell = this.column?.createCell({
+      mergeTimelineDataSource,
+      expanderList: this,
+    });
+    this.listCellMap.set(id, expanderCell);
+    this.innerContainer?.appendChild(expanderCell.cellElement!);
+    expanderCell.update();
+  }
+
   updateCellToContainer() {
     // 添加
+    const _that = this;
     const [t, b] = this.containerRange;
-    if (this.gantt?.mergeTimelineSourceData) {
-      // console.log(this.gantt?.mergeTimelineSourceData, t, b);
-      for (let i = 0; i < this.gantt.mergeTimelineSourceData.length; i++) {
-        const { top, bottom, id } = this.gantt.mergeTimelineSourceData[i];
+    function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
+      for (const d of mergeTimelineDataSource) {
+        const { top, bottom, children } = d;
         if (
           getContainType({
             contain: [t, b],
             contained: [top, bottom],
           }) !== ContainTypeEnum.NONE
         ) {
-          const oldExpanderCell = this.listCellMap.get(id + "");
-          if (oldExpanderCell) {
-            oldExpanderCell.update({
-              mergeTimelineDataSource: this.gantt.mergeTimelineSourceData[i],
-            });
-            continue;
-          }
-          const expanderCell = this.column?.createCell({
-            mergeTimelineDataSource: this.gantt.mergeTimelineSourceData[i],
-            expanderList: this,
-          });
-          this.listCellMap.set(id + "", expanderCell);
-          this.innerContainer?.appendChild(expanderCell.cellElement!);
-          expanderCell.update();
+          // console.log(t, b);
+          _that.renderExpanderCell(d);
         }
-        // console.log(this.listCellMap, "this.listCellMap");
-        if (top >= b) return;
+        // todo 跳出循环条件
+        if (top > b) return;
+
+        if (children?.length) {
+          renderLoop(children as MergeTimelineDataSource);
+        }
       }
     }
+
+    renderLoop(this.gantt?.mergeTimelineSourceData!);
   }
 
   scrollTo(position?: { x?: number; y?: number }) {

@@ -1,7 +1,7 @@
 import { GanttSourceData, MergeTimelineDataSource } from "../index.d";
 import { data } from "../data_source";
 import { oneDayTimeStamp } from "./date";
-import { getMergeTimelines } from "./handle";
+import { getMergeTimelines, ReturnMergeTimeline } from "./handle";
 
 type Tree = {
   id: string | number;
@@ -173,7 +173,6 @@ export function loopTree(tree: Tree[]) {
 /**
  * 剔除未展开的叶子节点 添加expand,expandable
  * 添加位置信息
- * 
  */
 export function getMergeTimelinesSourceData(payload: {
   dataSource: GanttSourceData[];
@@ -199,23 +198,22 @@ export function getMergeTimelinesSourceData(payload: {
       father,
       result = [],
     } = payload;
-
     for (let t of dataSource) {
-      // 顺序
-      console.log(t, father);
+      // console.log(t, father);
       const { children, timelines, ...other } = t;
       const mergeTimelines = getMergeTimelines({
         timelines,
         timestampLine,
         cellGap,
         verticalCurrentRowIdx,
-        fatherId: father?.id || 0,
+        path: [...(father?.path ?? []), t.id],
       });
+      // const mergeTimelines = [];
 
       const lastVerticalCurrentRowIdx = verticalCurrentRowIdx;
       verticalCurrentRowIdx =
         verticalCurrentRowIdx + Math.max(mergeTimelines?.length, 1);
-      const newFather = {
+      const newFather: MergeTimelineDataSource = {
         ...other,
         timelines,
         mergeTimelines,
@@ -223,23 +221,15 @@ export function getMergeTimelinesSourceData(payload: {
         bottom: verticalCurrentRowIdx,
         expand: expandIds.includes(t.id),
         expandable: !!t.children?.length,
+        path: [t.id],
       };
-
-      // console.log(
-      //   newFather,
-      //   lastVerticalCurrentRowIdx,
-      //   verticalCurrentRowIdx,
-      //   father
-      // );
 
       if (!father) {
         result.push(newFather);
       } else {
-        const { top: fatherTop, bottom: fatherBottom } = father;
-        father.top = Math.min(fatherTop, lastVerticalCurrentRowIdx);
-        father.bottom = Math.max(fatherBottom, verticalCurrentRowIdx);
         if (!father?.children) father.children = [];
         father.children.push(newFather);
+        newFather.path.unshift(...(father?.path ?? []));
       }
 
       // 跳过未展开的节点
@@ -271,9 +261,9 @@ export function getMergeTimelinesSourceData(payload: {
   return renderDataSource;
 }
 
-getMergeTimelinesSourceData({
-  dataSource: data,
-  expandIds: ["title_1"],
-  timestampLine: timestampLine!.map((t) => t.value),
-  cellGap: oneDayTimeStamp,
-});
+// getMergeTimelinesSourceData({
+//   dataSource: treeData,
+//   expandIds: ["0", "0-1"],
+//   timestampLine: timestampLine!.map((t) => t.value),
+//   cellGap: oneDayTimeStamp,
+// });

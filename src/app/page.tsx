@@ -14,10 +14,10 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         enhance: {
-          // timeline: {
+          timeline: {
             // cell: TTimelineListCell,
-            // cellContent: TTimelineCellContent,
-          // },
+            cellContent: TTimelineCellContent,
+          },
         },
       });
     }

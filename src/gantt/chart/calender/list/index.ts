@@ -107,7 +107,7 @@ class CalenderList {
     if (this?.gantt?.timestampLine) {
       for (let i = 0; i < this.gantt?.timestampLine?.length; i++) {
         const { left, right, id } = this.gantt?.timestampLine[i];
-
+        
         if (
           getContainType({
             contain: [l, r],

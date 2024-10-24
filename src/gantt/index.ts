@@ -89,8 +89,8 @@ export class Gantt {
     if (enhance) this.enhance = enhance;
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
       this.draw();
+
     this.initData(otherConfig);
-    return
     const _that = this;
     // expander
     this.ganttColumns = [
@@ -203,12 +203,12 @@ export class Gantt {
       this.mergeTimelineSourceData = getMergeTimelinesSourceData({
         dataSource: this.dataSource,
         cellGap: this.cellGap,
+        expandIds: ["1", "1-1"],
         timestampLine: this.timestampLine.map((t) => t.value),
       });
     }
 
     console.log(
-      this.timestampLine,
       this.dataSource,
       this.mergeTimelineSourceData,
       "mergeTimelinesSourceData"
@@ -258,6 +258,8 @@ export class Gantt {
   }
 
   getMergeTimelinesRowCount() {
+    // console.log(this.mergeTimelineSourceData, "this.mergeTimelineSourceData");
+    return this.mergeTimelineSourceData?.slice(-1)[0]?.bottom || 0;
     if (!this?.mergeTimelineSourceData) return 0;
     return this.mergeTimelineSourceData.reduce((pre, t) => {
       /** 无论有没有数据,一行至少占一行(空白数据情况),容器row占位计算撑大竖直高度 */

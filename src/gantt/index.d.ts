@@ -16,7 +16,7 @@ export type GanttSourceData = {
 type TimeRangeDate = string | number | Date;
 
 export type MergeTimelineDataSource = GanttSourceData & {
-  fatherId?: number;
+  path: (number | string)[];
   top: number;
   bottom: number;
   expand: boolean;
