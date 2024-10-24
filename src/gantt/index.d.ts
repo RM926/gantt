@@ -10,7 +10,7 @@ export type GanttSourceData = {
   id: string | number;
   title: string;
   timelines: GanttSourceDataTimeline[];
-  children?: GanttSourceData[];
+  children: GanttSourceData[];
 };
 
 type TimeRangeDate = string | number | Date;
