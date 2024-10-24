@@ -83,7 +83,7 @@ const data: GanttSourceData[] = [
     ],
   },
   {
-    id: "3tt",
+    id: "title3",
     title: "title3",
     timelines: [
       {

@@ -1,5 +1,7 @@
-import { GanttSourceData } from "..";
+import { GanttSourceData, MergeTimelineDataSource } from "../index.d";
 import { data } from "../data_source";
+import { oneDayTimeStamp } from "./date";
+import { getMergeTimelines } from "./handle";
 
 type Tree = {
   id: string | number;
@@ -79,6 +81,81 @@ const treeData: Tree[] = [
   },
 ];
 
+const timestampLine = [
+  {
+    id: "1727539200000",
+    left: 0,
+    right: 1,
+    value: 1727539200000,
+  },
+  {
+    id: "1727625600000",
+    left: 1,
+    right: 2,
+    value: 1727625600000,
+  },
+  {
+    id: "1727712000000",
+    left: 2,
+    right: 3,
+    value: 1727712000000,
+  },
+  {
+    id: "1727798400000",
+    left: 3,
+    right: 4,
+    value: 1727798400000,
+  },
+  {
+    id: "1727884800000",
+    left: 4,
+    right: 5,
+    value: 1727884800000,
+  },
+  {
+    id: "1727971200000",
+    left: 5,
+    right: 6,
+    value: 1727971200000,
+  },
+  {
+    id: "1728057600000",
+    left: 6,
+    right: 7,
+    value: 1728057600000,
+  },
+  {
+    id: "1728144000000",
+    left: 7,
+    right: 8,
+    value: 1728144000000,
+  },
+  {
+    id: "1728230400000",
+    left: 8,
+    right: 9,
+    value: 1728230400000,
+  },
+  {
+    id: "1728316800000",
+    left: 9,
+    right: 10,
+    value: 1728316800000,
+  },
+  {
+    id: "1728403200000",
+    left: 10,
+    right: 11,
+    value: 1728403200000,
+  },
+  {
+    id: "1728489600000",
+    left: 11,
+    right: 12,
+    value: 1728489600000,
+  },
+];
+
 export function loopTree(tree: Tree[]) {
   for (let t of tree) {
     // 顺序
@@ -90,54 +167,113 @@ export function loopTree(tree: Tree[]) {
     // console.log(t.id);
   }
 }
-
 // loopTree(treeData);
 
-// 顺序 未展开的剔除叶子节点
-export function removeDataSourceLeaf(payload: {
+// 顺序
+/**
+ * 剔除未展开的叶子节点 添加expand,expandable
+ * 添加位置信息
+ * 
+ */
+export function getMergeTimelinesSourceData(payload: {
   dataSource: GanttSourceData[];
+  timestampLine: number[];
+  cellGap: number;
   expandIds?: (number | string)[];
-  modifying?: GanttSourceData[];
 }) {
-  const { dataSource, expandIds = [], modifying } = payload;
+  let verticalCurrentRowIdx = 0;
 
-  for (let t of dataSource) {
-    // 顺序
-    console.log(t);
-    if (!expandIds?.includes(t.id)) {
-      continue;
-    }
+  function loopSourceData(payload: {
+    dataSource: GanttSourceData[];
+    expandIds?: (number | string)[];
+    timestampLine: number[];
+    cellGap: number;
+    father?: MergeTimelineDataSource;
+    result?: MergeTimelineDataSource[];
+  }) {
+    const {
+      dataSource,
+      expandIds = [],
+      timestampLine,
+      cellGap,
+      father,
+      result = [],
+    } = payload;
 
-    if (t.children?.length) {
-      // console.log("11", t);
-      removeDataSourceLeaf({ dataSource: t.children, expandIds, modifying });
+    for (let t of dataSource) {
+      // 顺序
+      console.log(t, father);
+      const { children, timelines, ...other } = t;
+      const mergeTimelines = getMergeTimelines({
+        timelines,
+        timestampLine,
+        cellGap,
+        verticalCurrentRowIdx,
+        fatherId: father?.id || 0,
+      });
+
+      const lastVerticalCurrentRowIdx = verticalCurrentRowIdx;
+      verticalCurrentRowIdx =
+        verticalCurrentRowIdx + Math.max(mergeTimelines?.length, 1);
+      const newFather = {
+        ...other,
+        timelines,
+        mergeTimelines,
+        top: lastVerticalCurrentRowIdx,
+        bottom: verticalCurrentRowIdx,
+        expand: expandIds.includes(t.id),
+        expandable: !!t.children?.length,
+      };
+
+      // console.log(
+      //   newFather,
+      //   lastVerticalCurrentRowIdx,
+      //   verticalCurrentRowIdx,
+      //   father
+      // );
+
+      if (!father) {
+        result.push(newFather);
+      } else {
+        const { top: fatherTop, bottom: fatherBottom } = father;
+        father.top = Math.min(fatherTop, lastVerticalCurrentRowIdx);
+        father.bottom = Math.max(fatherBottom, verticalCurrentRowIdx);
+        if (!father?.children) father.children = [];
+        father.children.push(newFather);
+      }
+
+      // 跳过未展开的节点
+      if (!expandIds?.includes(t.id)) {
+        continue;
+      }
+      if (t.children?.length) {
+        loopSourceData({
+          dataSource: t.children,
+          expandIds,
+          timestampLine,
+          cellGap,
+          result,
+          father: newFather,
+        });
+      }
     }
-    // console.log(t.id);
+    return result;
   }
-}
 
-export function loopDataSource(payload: {
-  dataSource: GanttSourceData[];
-  timestampLine?: number[];
-  cellGap?: number;
-  expandIds?: (number | string)[];
-}) {
   const { dataSource, expandIds, timestampLine, cellGap } = payload;
-  const showDataSource = removeDataSourceLeaf({ dataSource, expandIds });
-  // for (let t of dataSource) {
-  //   // 顺序
-  //   console.log(t.id);
-  //   if (!expandIds?.includes(t.id)) {
-  //     continue;
-  //   }
-  //   if (t.children?.length) {
-  //     loopDataSource({ dataSource: t.children, expandIds });
-  //   }
-  //   // 倒序
-  // }
+  const renderDataSource = loopSourceData({
+    timestampLine,
+    cellGap,
+    dataSource,
+    expandIds,
+  });
+  console.log("renderDataSource", renderDataSource);
+  return renderDataSource;
 }
 
-loopDataSource({
-  dataSource: treeData,
-  expandIds: ["0", "0-1"],
+getMergeTimelinesSourceData({
+  dataSource: data,
+  expandIds: ["title_1"],
+  timestampLine: timestampLine!.map((t) => t.value),
+  cellGap: oneDayTimeStamp,
 });

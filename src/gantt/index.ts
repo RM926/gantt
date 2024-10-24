@@ -17,7 +17,6 @@ import "./index.line.css";
 import MoveOverflowScroll from "./utils/move_overflow_scroll";
 import { getTimestampLineByTimeRange } from "./utils/handle";
 import {
-  getMergeTimelinesSourceData,
   getTimeRangeTime,
   getTimestampLines,
   ReturnMergeTimeline,
@@ -35,6 +34,7 @@ import CalenderListCell from "./chart/calender/list/cell";
 import { TimelineCellContent } from "./chart/timeline/cell/content";
 import { TimelineCellLeftRange } from "./chart/timeline/cell/left_range";
 import { TimelineCellRightRange } from "./chart/timeline/cell/right_range";
+import { getMergeTimelinesSourceData } from "./utils/tree";
 
 export enum ScrollControlSource {
   EXPANDER,
@@ -90,7 +90,7 @@ export class Gantt {
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
       this.draw();
     this.initData(otherConfig);
-    return;
+    return
     const _that = this;
     // expander
     this.ganttColumns = [
@@ -202,13 +202,13 @@ export class Gantt {
     if (this.dataSource) {
       this.mergeTimelineSourceData = getMergeTimelinesSourceData({
         dataSource: this.dataSource,
-        currentBeginTime,
-        CellGap: this.cellGap,
+        cellGap: this.cellGap,
         timestampLine: this.timestampLine.map((t) => t.value),
       });
     }
 
     console.log(
+      this.timestampLine,
       this.dataSource,
       this.mergeTimelineSourceData,
       "mergeTimelinesSourceData"

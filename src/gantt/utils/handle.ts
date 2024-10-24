@@ -133,7 +133,6 @@ export type ReturnMergeTimeline = GanttSourceDataTimeline & {
 /** 合并没有重叠日期到同一行 */
 export const getMergeTimelines = (payload: {
   timelines: GanttSourceDataTimeline[];
-  currentBeginTime: number;
   timestampLine: number[];
   /** 上一行数据的垂直方向的行数 */
   verticalCurrentRowIdx: number;
@@ -143,12 +142,12 @@ export const getMergeTimelines = (payload: {
   const {
     timelines,
 
-    currentBeginTime,
     timestampLine,
     verticalCurrentRowIdx,
     cellGap,
     fatherId,
   } = payload;
+  const currentBeginTime = timestampLine[0];
   const mergeTimelinesArray: ReturnMergeTimeline[][] = [];
 
   const diskArrayCount =
@@ -238,32 +237,30 @@ export const getMergeTimelines = (payload: {
   return mergeTimelinesArray;
 };
 
-export const getMergeTimelinesSourceData = (payload: {
-  dataSource: GanttSourceData[];
-  currentBeginTime: number;
-  timestampLine: number[];
-  CellGap: number;
-}) => {
-  const { dataSource, currentBeginTime, timestampLine, CellGap } = payload;
-  /** 记录当前行数 */
-  let verticalCurrentRowIdx = 0;
-  return dataSource.map((d) => {
-    const mergeTimelines = getMergeTimelines({
-      timelines: d.timelines,
-      timestampLine,
-      currentBeginTime,
-      verticalCurrentRowIdx,
-      cellGap: CellGap,
-      fatherId: d.id,
-    });
-    const currentStartRowIdx = verticalCurrentRowIdx;
-    /** 无论有没有数据,一行至少占一行(空白数据情况) */
-    verticalCurrentRowIdx += Math.max(mergeTimelines?.length, 1);
-    return {
-      ...d,
-      top: currentStartRowIdx,
-      bottom: verticalCurrentRowIdx,
-      mergeTimelines,
-    };
-  });
-};
+// export const getMergeTimelinesSourceData = (payload: {
+//   dataSource: GanttSourceData[];
+//   timestampLine: number[];
+//   CellGap: number;
+// }) => {
+//   const { dataSource, timestampLine, CellGap } = payload;
+//   /** 记录当前行数 */
+//   let verticalCurrentRowIdx = 0;
+//   return dataSource.map((d) => {
+//     const mergeTimelines = getMergeTimelines({
+//       timelines: d.timelines,
+//       timestampLine,
+//       verticalCurrentRowIdx,
+//       cellGap: CellGap,
+//       fatherId: d.id,
+//     });
+//     const currentStartRowIdx = verticalCurrentRowIdx;
+//     /** 无论有没有数据,一行至少占一行(空白数据情况) */
+//     verticalCurrentRowIdx += Math.max(mergeTimelines?.length, 1);
+//     return {
+//       ...d,
+//       top: currentStartRowIdx,
+//       bottom: verticalCurrentRowIdx,
+//       mergeTimelines,
+//     };
+//   });
+// };
