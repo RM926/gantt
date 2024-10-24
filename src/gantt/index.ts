@@ -90,6 +90,7 @@ export class Gantt {
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
       this.draw();
     this.initData(otherConfig);
+    return;
     const _that = this;
     // expander
     this.ganttColumns = [
@@ -207,7 +208,11 @@ export class Gantt {
       });
     }
 
-    // console.log(this.mergeTimelineSourceData, "mergeTimelinesSourceData");
+    console.log(
+      this.dataSource,
+      this.mergeTimelineSourceData,
+      "mergeTimelinesSourceData"
+    );
   }
 
   scrollControl(payload: {

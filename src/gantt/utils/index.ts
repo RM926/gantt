@@ -7,3 +7,4 @@ export * from "./mouse_move_step";
 export * from "./move_overflow_scroll";
 export * from "./resize-observer-dom";
 export * from "./scroll_bar";
+export * from "./tree";

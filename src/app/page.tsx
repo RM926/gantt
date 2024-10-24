@@ -3,6 +3,7 @@ import Gantt from "@/gantt";
 import { data } from "@/gantt/data_source";
 import { TTimelineCellContent, TTimelineListCell } from "@/gantt/demo";
 import { useEffect, useRef } from "react";
+import { loopTree } from "@/gantt/utils";
 
 const Page = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -13,10 +14,10 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         enhance: {
-          timeline: {
+          // timeline: {
             // cell: TTimelineListCell,
-            cellContent: TTimelineCellContent,
-          },
+            // cellContent: TTimelineCellContent,
+          // },
         },
       });
     }
