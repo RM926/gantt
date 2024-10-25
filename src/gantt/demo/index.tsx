@@ -43,33 +43,34 @@ const ExpanderListCellRender = (props: {
     title,
     path = [],
   } = expanderListCell?.mergeTimelineDataSource ?? {};
-  console.log(
-    expanderListCell?.mergeTimelineDataSource,
-    expand,
-    expandable,
-    expandIds
-  );
+  // console.log(
+  //   expanderListCell?.mergeTimelineDataSource,
+  //   expand,
+  //   expandable,
+  //   expandIds
+  // );
   return (
-    <div style={{ fontSize: 12, paddingLeft: (path?.length - 1) * 12 }}>
+    <div
+      style={{
+        fontSize: 12,
+        height: "100%",
+        paddingLeft: (path?.length - 1) * 12,
+        cursor: expandable ? "pointer" : "default",
+      }}
+      onClick={() => {
+        if (!expandable) return;
+        const newExpandIds = expand
+          ? expandIds.filter((d) => {
+              return d !== id;
+            })
+          : [...expandIds, id!];
+        update?.({
+          expandIds: newExpandIds,
+        });
+      }}
+    >
       <div>{title}</div>
-      <div>open: {expand ? "true" : "false"}</div>
-      {expandable && (
-        <div
-          onClick={() => {
-            const newExpandIds = expand
-              ? expandIds.filter((d) => {
-                  return d !== id;
-                })
-              : [...expandIds, id!];
-            console.log(newExpandIds, "newExpandIds");
-            update?.({
-              expandIds: newExpandIds,
-            });
-          }}
-        >
-          expandable_click
-        </div>
-      )}
+      {expandable && <div>{expand ? "close" : "open"}</div>}
     </div>
   );
 };

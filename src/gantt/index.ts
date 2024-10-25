@@ -15,15 +15,8 @@ import {
 import "./index.css";
 import "./index.line.css";
 import MoveOverflowScroll from "./utils/move_overflow_scroll";
-import {
-  ReturnMergeTimeline,
-  getTimestampLineByTimeRange,
-} from "./utils/merge";
-import {
-  getTimeRangeTime,
-  getTimestampLines,
-  updateGanttDataSource,
-} from "./utils/merge";
+import { getTimestampLineByTimeRange } from "./utils/merge";
+import { getTimeRangeTime, getTimestampLines } from "./utils/merge";
 import Column from "./expander/column";
 import { getRandomClass } from "./utils/document";
 import GanttTimeline from "./chart/timeline";
@@ -242,7 +235,6 @@ export class Gantt {
   }
 
   update = (config: Omit<GanttConfig, "container">) => {
-    console.log(config, "config");
     this.initData(config);
     this.ganttTimeline?.updateInnerContainer();
     this.ganttTimeline?.update();
@@ -254,12 +246,6 @@ export class Gantt {
 
   getMergeTimelinesRowCount() {
     return this.mergeTimelineSourceData?.slice(-1)[0]?.bottom || 0;
-    if (!this?.mergeTimelineSourceData) return 0;
-    return this.mergeTimelineSourceData.reduce((pre, t) => {
-      /** 无论有没有数据,一行至少占一行(空白数据情况),容器row占位计算撑大竖直高度 */
-      const c = pre + Math.max(t.mergeTimelines?.length, 1);
-      return c;
-    }, 0);
   }
 }
 
