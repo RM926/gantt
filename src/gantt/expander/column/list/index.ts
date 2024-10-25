@@ -22,6 +22,7 @@ class ExpanderList {
   innerContainer?: HTMLElement;
 
   listCellMap = new Map<string | number, ExpanderListCell>();
+  updateCollectCellId?: (number | string)[];
   //  [t, b, l, r]
   containerRange: number[] = [0, 0, 0, 0];
 
@@ -36,22 +37,6 @@ class ExpanderList {
     this.drawInnerContainer();
     this.registerEvent();
     this.onContainerScroll();
-  }
-
-  removeCellInContainer() {
-    const [t, b] = this.containerRange;
-    this.listCellMap.forEach((cell) => {
-      const { top, bottom, id } = cell.mergeTimelineDataSource!;
-      if (
-        getContainType({
-          contain: [t, b],
-          contained: [top, bottom],
-        }) === ContainTypeEnum.NONE
-      ) {
-        cell.remove();
-        this.listCellMap.delete(id);
-      }
-    });
   }
 
   drawInnerContainer() {
@@ -74,9 +59,7 @@ class ExpanderList {
       (scrollLeft + width) / cellWidth,
     ];
 
-    // 清除缓存的cell
-    this.removeCellInContainer();
-    this.updateCellToContainer();
+    this.update();
     this.scrollCallback?.(e);
   };
 
@@ -121,8 +104,10 @@ class ExpanderList {
 
   updateCellToContainer() {
     // 添加
-    const _that = this;
+    this.updateCollectCellId = [];
     const [t, b] = this.containerRange;
+    const _that = this;
+
     function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
       for (const d of mergeTimelineDataSource) {
         const { top, bottom, children } = d;
@@ -132,8 +117,8 @@ class ExpanderList {
             contained: [top, bottom],
           }) !== ContainTypeEnum.NONE
         ) {
-          // console.log(t, b);
           _that.renderExpanderCell(d);
+          _that.updateCollectCellId?.push(d.id);
         }
         // todo 跳出循环条件
         if (top > b) return;
@@ -145,6 +130,28 @@ class ExpanderList {
     }
 
     renderLoop(this.gantt?.mergeTimelineSourceData!);
+  }
+
+  removeCellInContainer() {
+    const [t, b] = this.containerRange;
+    this.listCellMap.forEach((cell) => {
+      const { top, bottom, id } = cell.mergeTimelineDataSource!;
+      if (
+        getContainType({
+          contain: [t, b],
+          contained: [top, bottom],
+        }) === ContainTypeEnum.NONE ||
+        !this.updateCollectCellId?.includes(id)
+      ) {
+        cell.remove();
+        this.listCellMap.delete(id);
+      }
+    });
+  }
+
+  update() {
+    this.updateCellToContainer();
+    this.removeCellInContainer();
   }
 
   scrollTo(position?: { x?: number; y?: number }) {

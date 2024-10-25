@@ -134,9 +134,7 @@ class GanttTimeline {
       (scrollLeft + width) / cellWidth,
     ];
 
-    this.updateCellToContainer();
-    // 清除缓存的cell
-    this.removeCellInContainer();
+    this.update();
     this.scrollCallback?.(e);
   };
 
@@ -169,7 +167,8 @@ class GanttTimeline {
     // todo 保留的数据在下次如何更快的更新，清除数据没有的项目
     this.timelineCellMap.forEach((cell) => {
       if (
-        !this.judgeContain(cell.mergeTimeline, this.containerRange) &&
+        (!this.judgeContain(cell.mergeTimeline, this.containerRange) ||
+          !this.updateCollectCellId?.includes(cell.mergeTimeline.id)) &&
         !cell.moving
       ) {
         cell.cellElement?.remove();
@@ -226,6 +225,11 @@ class GanttTimeline {
     }
 
     renderLoop(this.gantt?.mergeTimelineSourceData ?? []);
+  }
+
+  update(){
+    this.updateCellToContainer();
+    this.removeCellInContainer();
   }
 
   /**

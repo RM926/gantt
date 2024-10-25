@@ -244,11 +244,11 @@ export class Gantt {
   update = (config: Omit<GanttConfig, "container">) => {
     console.log(config, "config");
     this.initData(config);
-    this.ganttTimeline?.updateCellToContainer();
     this.ganttTimeline?.updateInnerContainer();
+    this.ganttTimeline?.update();
     this.ganttColumns?.forEach((c) => {
       c.list?.updateInnerContainer();
-      c.list?.updateCellToContainer();
+      c.list?.update();
     });
   };
 
