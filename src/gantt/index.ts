@@ -15,13 +15,15 @@ import {
 import "./index.css";
 import "./index.line.css";
 import MoveOverflowScroll from "./utils/move_overflow_scroll";
-import { getTimestampLineByTimeRange } from "./utils/handle";
+import {
+  ReturnMergeTimeline,
+  getTimestampLineByTimeRange,
+} from "./utils/merge";
 import {
   getTimeRangeTime,
   getTimestampLines,
-  ReturnMergeTimeline,
   updateGanttDataSource,
-} from "./utils/handle";
+} from "./utils/merge";
 import Column from "./expander/column";
 import { getRandomClass } from "./utils/document";
 import GanttTimeline from "./chart/timeline";
@@ -47,11 +49,12 @@ export type GanttConfig = {
   dataSource?: GanttSourceData[];
   cellGap?: number;
   timeRange?: string[];
+  expandIds?: (string | number)[];
   styles?: Partial<typeof BasicStyles>;
   enhance?: Partial<{
     expanderLabel: {
-      header: ExpanderHeader;
-      cell: ExpanderListCell;
+      header?: ExpanderHeader;
+      cell?: ExpanderListCell;
     };
     timeline: {
       cell: TimelineCell;
@@ -79,6 +82,8 @@ export class Gantt {
   styles = BasicStyles;
   enhance?: GanttConfig["enhance"];
 
+  expandIds?: (string | number)[];
+
   ganttColumns?: Column[];
   ganttCalender?: Calender;
   ganttTimeline?: GanttTimeline;
@@ -89,7 +94,7 @@ export class Gantt {
     if (enhance) this.enhance = enhance;
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
       this.draw();
-
+    // return;
     this.initData(otherConfig);
     const _that = this;
     // expander
@@ -186,10 +191,11 @@ export class Gantt {
   }
 
   initData(config: Omit<GanttConfig, "container">) {
-    const { dataSource, cellGap, timeRange } = config;
+    const { dataSource, cellGap, timeRange, expandIds } = config;
     if (dataSource) this.dataSource = dataSource;
     if (cellGap) this.cellGap = cellGap;
     if (timeRange) this.timeRange = timeRange;
+    if (expandIds) this.expandIds = expandIds;
     this.timestampLine = getTimestampLines(
       getTimestampLineByTimeRange({
         timeRange: this.timeRange?.length
@@ -198,13 +204,12 @@ export class Gantt {
       })
     );
 
-    const currentBeginTime = this.timestampLine[0].value;
     if (this.dataSource) {
       this.mergeTimelineSourceData = getMergeTimelinesSourceData({
         dataSource: this.dataSource,
         cellGap: this.cellGap,
-        expandIds: ["1", "1-1"],
         timestampLine: this.timestampLine.map((t) => t.value),
+        expandIds: this.expandIds,
       });
     }
 
@@ -236,29 +241,18 @@ export class Gantt {
     }
   }
 
-  update(config: Omit<GanttConfig, "container">) {
+  update = (config: Omit<GanttConfig, "container">) => {
+    console.log(config, "config");
     this.initData(config);
-    // todo
-  }
-
-  updateCell(mergeTimeline: ReturnMergeTimeline) {
-    this.initData({
-      dataSource: updateGanttDataSource({
-        dataSource: this.dataSource!,
-        mergeTimelinesSourceData: this.mergeTimelineSourceData!,
-        returnMergeTimeline: mergeTimeline,
-      }),
-    });
     this.ganttTimeline?.updateCellToContainer();
     this.ganttTimeline?.updateInnerContainer();
     this.ganttColumns?.forEach((c) => {
       c.list?.updateInnerContainer();
       c.list?.updateCellToContainer();
     });
-  }
+  };
 
   getMergeTimelinesRowCount() {
-    // console.log(this.mergeTimelineSourceData, "this.mergeTimelineSourceData");
     return this.mergeTimelineSourceData?.slice(-1)[0]?.bottom || 0;
     if (!this?.mergeTimelineSourceData) return 0;
     return this.mergeTimelineSourceData.reduce((pre, t) => {

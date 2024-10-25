@@ -1,7 +1,7 @@
 import { MergeTimelineDataSource } from "../../../gantt/index.d";
 import Gantt, { GanttConfig } from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
-import { ReturnMergeTimeline } from "../../utils/handle";
+import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
 import MoveOverflowScroll, {
   MoveDirection,
   MoveScrollOverflowConfig,
@@ -28,6 +28,9 @@ class GanttTimeline {
   enhance?: GanttTimelineConfig["enhance"];
 
   timelineCellMap = new Map<string, TimelineCell>();
+  /** 收集本次检测更新的id */
+  updateCollectCellId?: (number | string)[];
+
   //  [t, b, l, r]
   containerRange: number[] = [];
 
@@ -131,9 +134,9 @@ class GanttTimeline {
       (scrollLeft + width) / cellWidth,
     ];
 
+    this.updateCellToContainer();
     // 清除缓存的cell
     this.removeCellInContainer();
-    this.updateCellToContainer();
     this.scrollCallback?.(e);
   };
 
@@ -142,7 +145,14 @@ class GanttTimeline {
   }
 
   changeCell(mergeTimeline: ReturnMergeTimeline) {
-    this.gantt?.updateCell(mergeTimeline);
+    const { dataSource, mergeTimelineSourceData } = this.gantt!;
+    this.gantt?.update({
+      dataSource: updateGanttDataSource({
+        dataSource: dataSource!,
+        mergeTimelinesSourceData: mergeTimelineSourceData!,
+        returnMergeTimeline: mergeTimeline,
+      }),
+    });
   }
 
   scrollTo(position?: { x?: number; y?: number }) {
@@ -156,6 +166,7 @@ class GanttTimeline {
   }
 
   removeCellInContainer() {
+    // todo 保留的数据在下次如何更快的更新，清除数据没有的项目
     this.timelineCellMap.forEach((cell) => {
       if (
         !this.judgeContain(cell.mergeTimeline, this.containerRange) &&
@@ -176,6 +187,7 @@ class GanttTimeline {
     if (oldCell) {
       if (!oldCell.moving) {
         oldCell.update({ mergeTimeline });
+        return;
       }
     } else {
       const cell = this.createCell({
@@ -190,6 +202,7 @@ class GanttTimeline {
   updateCellToContainer() {
     // 添加
     const [t, b] = this.containerRange;
+    this.updateCollectCellId = [];
     const _that = this;
     function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
       for (const d of mergeTimelineDataSource) {
@@ -199,6 +212,7 @@ class GanttTimeline {
           mergeTimeline.forEach((m) => {
             // console.log(m, "m");
             if (_that.judgeContain(m, _that.containerRange)) {
+              _that.updateCollectCellId?.push(m.id);
               _that.renderTimeline(m);
             }
             if (top > b) return;

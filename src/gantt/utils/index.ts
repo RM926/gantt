@@ -2,7 +2,7 @@ export * from "./arr";
 export * from "./contain";
 export * from "./date";
 export * from "./document";
-export * from "./handle";
+export * from "./merge";
 export * from "./mouse_move_step";
 export * from "./move_overflow_scroll";
 export * from "./resize-observer-dom";

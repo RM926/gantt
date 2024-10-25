@@ -7,7 +7,7 @@ import ExpanderListCell, {
   ExpanderListCellConfig,
 } from "../expander/column/list/cell";
 import TimelineCell, { TimelineCellConfig } from "../chart/timeline/cell";
-import { ReturnMergeTimeline } from "../utils/handle";
+import { ReturnMergeTimeline } from "../utils/merge";
 import {
   TimelineCellContent,
   TimelineCellContentConfig,
@@ -27,6 +27,50 @@ const App = (props: { a: number }) => {
       </div>
       <div>list</div>
     </>
+  );
+};
+
+const ExpanderListCellRender = (props: {
+  expanderListCell: ExpanderListCell;
+}) => {
+  const { expanderListCell } = props;
+  const { update, expandIds = [] } =
+    expanderListCell?.expanderList?.gantt ?? {};
+  const {
+    id,
+    expand,
+    expandable,
+    title,
+    path = [],
+  } = expanderListCell?.mergeTimelineDataSource ?? {};
+  console.log(
+    expanderListCell?.mergeTimelineDataSource,
+    expand,
+    expandable,
+    expandIds
+  );
+  return (
+    <div style={{ fontSize: 12, paddingLeft: (path?.length - 1) * 12 }}>
+      <div>{title}</div>
+      <div>open: {expand ? "true" : "false"}</div>
+      {expandable && (
+        <div
+          onClick={() => {
+            const newExpandIds = expand
+              ? expandIds.filter((d) => {
+                  return d !== id;
+                })
+              : [...expandIds, id!];
+            console.log(newExpandIds, "newExpandIds");
+            update?.({
+              expandIds: newExpandIds,
+            });
+          }}
+        >
+          expandable_click
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -101,8 +145,7 @@ export class TExpanderListCell extends ExpanderListCell {
   // 创建新的内容
   updateRender(it: ExpanderListCell) {
     if (!this.root) this.root = createRoot(it.cellElement!);
-    const containerRangeBottom = it.expanderList?.containerRange?.[1];
-    this.root.render(<App a={1} />);
+    this.root.render(<ExpanderListCellRender expanderListCell={it} />);
   }
 }
 

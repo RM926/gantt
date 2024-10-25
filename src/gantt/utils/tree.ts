@@ -1,7 +1,11 @@
-import { GanttSourceData, MergeTimelineDataSource } from "../index.d";
+import {
+  GanttSourceData,
+  GanttSourceDataTimeline,
+  MergeTimelineDataSource,
+} from "../index.d";
 import { data } from "../data_source";
 import { oneDayTimeStamp } from "./date";
-import { getMergeTimelines, ReturnMergeTimeline } from "./handle";
+import { getMergeTimelines, ReturnMergeTimeline } from "./merge";
 
 type Tree = {
   id: string | number;
@@ -169,6 +173,24 @@ export function loopTree(tree: Tree[]) {
 }
 // loopTree(treeData);
 
+export function getTreePathTarget<T extends Tree>(
+  tree: T[],
+  path: (number | string)[],
+  pathIndex = 0
+) {
+  const pathId = path[pathIndex ?? 0];
+  for (let t of tree) {
+    // console.log(t.id, t);
+    if (t.id === pathId) {
+      const nextPathId = path?.[pathIndex + 1];
+      if (nextPathId && t?.children?.length)
+        return getTreePathTarget(t.children, path, pathIndex + 1);
+      if (!nextPathId) return t;
+    }
+  }
+}
+
+// console.log(getLoopTreePathTarget(treeData, ["1", "1-2", "1-1-1"]));
 // 顺序
 /**
  * 剔除未展开的叶子节点 添加expand,expandable

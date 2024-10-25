@@ -1,5 +1,5 @@
 import GanttTimeline from "../index";
-import { ReturnMergeTimeline } from "../../../utils/handle";
+import { ReturnMergeTimeline } from "../../../utils/merge";
 import MouseMoveStep from "../../../utils/mouse_move_step";
 import { GanttTimelineCellClassName } from "../../../constant";
 import { TimelineCellContent } from "./content";

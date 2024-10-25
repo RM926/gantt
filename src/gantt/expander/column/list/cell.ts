@@ -35,7 +35,7 @@ class ExpanderListCell {
     const styles = {
       boxSizing: "border-box",
       position: "absolute",
-      height: `${mergeTimelines?.length * cellHeight}px`,
+      height: `${Math.max(mergeTimelines?.length, 1) * cellHeight}px`,
       width: `${cellWidth}px`,
       top: `${top * cellHeight}px`,
     };
@@ -59,7 +59,7 @@ class ExpanderListCell {
   // to render合并到updateRender中
   render(it: ExpanderListCell) {
     const div = document.createElement("div");
-    const { title, expandable, expand, fatherId } =
+    const { title, expandable, expand } =
       this.mergeTimelineDataSource!;
     div.innerHTML = `${title}/${expandable}/${expand}`;
     this.cellElement?.append(div);

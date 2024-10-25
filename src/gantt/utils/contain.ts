@@ -1,4 +1,4 @@
-import { ReturnMergeTimeline } from "./handle";
+import { ReturnMergeTimeline } from "./merge";
 
 export enum ContainTypeEnum {
   NONE,
