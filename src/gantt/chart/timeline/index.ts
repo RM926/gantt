@@ -1,12 +1,13 @@
+import { appendClassName, createElement } from "../../utils";
 import { MergeTimelineDataSource } from "../../../gantt/index.d";
-import Gantt, { GanttConfig } from "../../index";
+import Gantt from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
 import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
 import MoveOverflowScroll, {
-  MoveDirection,
   MoveScrollOverflowConfig,
 } from "../../utils/move_overflow_scroll";
 import TimelineCell, { TimelineCellConfig } from "./cell";
+import { GanttTimelineInnerClassName } from "../../constant";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;
@@ -28,7 +29,7 @@ class GanttTimeline {
   enhance?: GanttTimelineConfig["enhance"];
 
   timelineCellMap = new Map<string, TimelineCell>();
-  /** 收集本次检测更新的id */
+  /** 收集本次检测更新的id,方便清除timelineCellMap的缓存数据 */
   updateCollectCellId?: (number | string)[];
 
   //  [t, b, l, r]
@@ -67,42 +68,15 @@ class GanttTimeline {
   scrollStepChange: MoveScrollOverflowConfig["scrollStepChange"] = (
     payload
   ) => {
-    const { direction, changeStep } = payload;
-    const movingCell = this.getMovingCell();
-    if (movingCell) {
-      if (
-        direction === MoveDirection.RIGHT ||
-        direction === MoveDirection.LEFT
-      ) {
-        const { endTime, startTime, cellFinishCount, cellBeginCount } =
-          movingCell.mergeTimeline;
-        const cellGap = this.gantt?.cellGap!;
-        const newMergeTimeline = {
-          ...movingCell.mergeTimeline,
-          startTime: startTime + changeStep * cellGap,
-          endTime: endTime + changeStep * cellGap,
-          cellFinishCount: cellFinishCount + changeStep,
-          cellBeginCount: cellBeginCount + changeStep,
-        };
-        movingCell.update({ mergeTimeline: newMergeTimeline });
-      } else if (
-        direction === MoveDirection.TOP ||
-        direction === MoveDirection.BOTTOM
-      ) {
-        const { cellTopCount, cellBottomCount } = movingCell.mergeTimeline;
-        const newMergeTimeline = {
-          ...movingCell.mergeTimeline,
-          cellTopCount: cellTopCount + changeStep,
-          cellBottomCount: cellBottomCount + changeStep,
-        };
-        movingCell.update({ mergeTimeline: newMergeTimeline });
-      }
-    }
+    this.timelineCellMap.forEach((cell) => {
+      cell?.scrollStepChange?.(payload);
+    });
   };
 
   drawInnerContainer() {
     /**  绘制滚动内层区域 */
-    this.innerContainer = document.createElement("div");
+    this.innerContainer = createElement("div");
+    appendClassName(this.innerContainer, [GanttTimelineInnerClassName]);
     this.updateInnerContainer();
     this.container?.appendChild(this.innerContainer);
   }
@@ -164,17 +138,18 @@ class GanttTimeline {
   }
 
   removeCellInContainer() {
-    // todo 保留的数据在下次如何更快的更新，清除数据没有的项目
     this.timelineCellMap.forEach((cell) => {
       if (
         (!this.judgeContain(cell.mergeTimeline, this.containerRange) ||
           !this.updateCollectCellId?.includes(cell.mergeTimeline.id)) &&
-        !cell.moving
+        !cell.moving &&
+        !cell.leftDragging &&
+        !cell.rightDragging
       ) {
         cell.cellElement?.remove();
         this.timelineCellMap.delete(cell.mergeTimeline.id);
       } else {
-        cell.update();
+        cell.updateSub(cell);
       }
     });
   }
@@ -184,9 +159,11 @@ class GanttTimeline {
 
     const oldCell = this.timelineCellMap.get(id);
     if (oldCell) {
-      if (!oldCell.moving) {
+      if (!oldCell.moving && !oldCell.leftDragging && !oldCell.rightDragging) {
         oldCell.update({ mergeTimeline });
         return;
+      } else {
+        oldCell.updateSub(oldCell);
       }
     } else {
       const cell = this.createCell({
@@ -227,7 +204,8 @@ class GanttTimeline {
     renderLoop(this.gantt?.mergeTimelineSourceData ?? []);
   }
 
-  update(){
+  update() {
+    // 内层函数为一个CellGap更新一次，所以如果超出屏幕进行滚动,需要与屏幕滚动高度贴合的数据要在上层手动更新
     this.updateCellToContainer();
     this.removeCellInContainer();
   }
@@ -251,10 +229,6 @@ class GanttTimeline {
         contained: [cellBeginCount, cellFinishCount],
       }) === ContainTypeEnum.NONE
     );
-  }
-
-  getMovingCell(): TimelineCell | undefined {
-    return [...this.timelineCellMap.values()].find((c) => c.moving);
   }
 
   createCell(config: TimelineCellConfig): TimelineCell {

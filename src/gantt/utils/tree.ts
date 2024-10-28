@@ -279,7 +279,7 @@ export function getMergeTimelinesSourceData(payload: {
     dataSource,
     expandIds,
   });
-  console.log("renderDataSource", renderDataSource);
+  // console.log("renderDataSource", renderDataSource);
   return renderDataSource;
 }
 

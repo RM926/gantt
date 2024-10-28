@@ -69,11 +69,8 @@ class MouseMoveStep {
     this.moveStatusChange = moveStatusChange;
     this._init();
   }
-  
 
-  setRange(){
-    
-  }
+  setRange() {}
 
   _onMovedStepCallback() {
     const [stepOffsetRateX, stepOffsetRateY] = this.stepOffsetRate!;
@@ -168,9 +165,11 @@ class MouseMoveStep {
       // todo_solve bug mousedown事件没有阻止默认行为 e.preventDefault();
       // 这里如果把this.drag append 到body上，第二次拖拽不动 不是这个问题
       // 如果append的位置是this.target 相同的位置，第二次拖拽不动
-
-      const { top, left, width, height } = this.target.getBoundingClientRect();
-      // const { offsetTop, offsetLeft, clientWidth, clientHeight } = this.target;
+      const { width, height } = this.target.getBoundingClientRect();
+      const { offsetTop, offsetLeft, clientWidth, clientHeight } = this.target;
+      console.log(this.target.getBoundingClientRect());
+      const [left, top] = this.current!;
+      console.dir(this.target, offsetTop, offsetLeft);
 
       const d = document.createElement("div");
       d.style.border = "1px solid red";
@@ -193,10 +192,10 @@ class MouseMoveStep {
   onmousedown = (e: any) => {
     // console.log("down");
     e.preventDefault();
-    this.cloneElement();
     this.moving = true;
 
-    const { x, y } = e;
+    const { pageX: x, pageY: y } = e;
+    // console.log(x, y, e);
 
     const p = [x, y];
     this.begin = p;
@@ -204,6 +203,7 @@ class MouseMoveStep {
 
     this.lastStepCurrent = this.current;
 
+    this.cloneElement();
     if (this.moveStatusChange) this.moveStatusChange(this.moving);
   };
 
@@ -211,8 +211,7 @@ class MouseMoveStep {
     // console.log(e);
     // e.preventDefault();
     if (this.moving) {
-      const { x, y } = e;
-      // console.log(x, "move_down");
+      const { pageX: x, pageY: y } = e;
       this.lastCurrent = this.current;
       const p = [x, y];
       this.current = p;

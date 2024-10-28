@@ -22,6 +22,8 @@ class CalenderList {
   calender?: ListConfig["calender"];
 
   listCellMap = new Map<number | string, CalenderListCell>();
+  updateCollectCellId?: (number | string)[];
+
   //  [t, b, l, r]
   containerRange: number[] = [0, 0, 0, 0];
 
@@ -47,7 +49,8 @@ class CalenderList {
         getContainType({
           contain: [l, r],
           contained: [left, right],
-        }) === ContainTypeEnum.NONE
+        }) === ContainTypeEnum.NONE ||
+        !this.updateCollectCellId?.includes(id)
       ) {
         cell.remove();
         this.listCellMap.delete(id);
@@ -75,9 +78,7 @@ class CalenderList {
       (scrollLeft + width) / cellWidth,
     ];
 
-    // 清除缓存的cell
-    this.removeCellInContainer();
-    this.updateCellToContainer();
+    this.update();
     this.scrollCallback?.(e);
   };
 
@@ -101,19 +102,25 @@ class CalenderList {
     });
   }
 
+  update() {
+    this.updateCellToContainer();
+    this.removeCellInContainer();
+  }
+
   updateCellToContainer() {
-    // 添加
     const [, , l, r] = this.containerRange;
+    this.updateCollectCellId = [];
     if (this?.gantt?.timestampLine) {
       for (let i = 0; i < this.gantt?.timestampLine?.length; i++) {
         const { left, right, id } = this.gantt?.timestampLine[i];
-        
+
         if (
           getContainType({
             contain: [l, r],
             contained: [left, right],
           }) !== ContainTypeEnum.NONE
         ) {
+          this.updateCollectCellId?.push(id);
           const oldExpanderCell = this.listCellMap.get(id);
           if (oldExpanderCell) {
             oldExpanderCell.update({
@@ -125,7 +132,6 @@ class CalenderList {
             timestamp: this.gantt?.timestampLine[i],
             calenderList: this,
           })!;
-
           this.listCellMap.set(id, calenderCell);
           this.innerContainer?.appendChild(calenderCell.cellElement!);
           calenderCell.update();

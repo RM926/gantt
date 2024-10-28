@@ -70,6 +70,13 @@
   height: 100%;
 }
 
+.gantt_timeline_cell_left_drag,
+.gantt_timeline_cell_right_drag {
+  width: 20px;
+  height: 100%;
+  cursor: pointer;
+}
+
 .gantt_expander_column_list::-webkit-scrollbar {
   display: none;
 }
@@ -77,3 +84,7 @@
 .gantt_calendar_list::-webkit-scrollbar {
   display: none;
 }
+
+/* .gantt_timeline::-webkit-scrollbar {
+  display: none;
+} */

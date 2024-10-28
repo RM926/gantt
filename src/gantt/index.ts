@@ -30,6 +30,8 @@ import { TimelineCellContent } from "./chart/timeline/cell/content";
 import { TimelineCellLeftRange } from "./chart/timeline/cell/left_range";
 import { TimelineCellRightRange } from "./chart/timeline/cell/right_range";
 import { getMergeTimelinesSourceData } from "./utils/tree";
+import TimelineCellLeftDrag from "./chart/timeline/cell/left_drag";
+import TimelineCellRightDrag from "./chart/timeline/cell/right_drag";
 
 export enum ScrollControlSource {
   EXPANDER,
@@ -54,6 +56,8 @@ export type GanttConfig = {
       cellContent: TimelineCellContent;
       leftRange: TimelineCellLeftRange;
       rightRange: TimelineCellRightRange;
+      leftDrag: TimelineCellLeftDrag;
+      rightDrag: TimelineCellRightDrag;
     };
     calender: {
       header: CalenderHeader;
@@ -193,7 +197,10 @@ export class Gantt {
       getTimestampLineByTimeRange({
         timeRange: this.timeRange?.length
           ? this.timeRange
-          : getTimeRangeTime({ dataSource: this.dataSource! }),
+          : getTimeRangeTime({
+              dataSource: this.dataSource!,
+              expandIds: this.expandIds,
+            }),
       })
     );
 
@@ -236,6 +243,8 @@ export class Gantt {
 
   update = (config: Omit<GanttConfig, "container">) => {
     this.initData(config);
+    this.ganttCalender?.list?.updateInnerContainer();
+    this.ganttCalender?.list?.update();
     this.ganttTimeline?.updateInnerContainer();
     this.ganttTimeline?.update();
     this.ganttColumns?.forEach((c) => {

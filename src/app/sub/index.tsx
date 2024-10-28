@@ -1,17 +1,17 @@
-import { createRoot } from "react-dom/client";
-import ExpanderHeader, {
-  ExpanderHeaderConfig,
-} from "../expander/column/header";
-import { useState } from "react";
-import ExpanderListCell, {
-  ExpanderListCellConfig,
-} from "../expander/column/list/cell";
-import TimelineCell, { TimelineCellConfig } from "../chart/timeline/cell";
-import { ReturnMergeTimeline } from "../utils/merge";
+import TimelineCell, { TimelineCellConfig } from "@/gantt/chart/timeline/cell";
 import {
   TimelineCellContent,
   TimelineCellContentConfig,
-} from "../chart/timeline/cell/content";
+} from "@/gantt/chart/timeline/cell/content";
+import ExpanderHeader, {
+  ExpanderHeaderConfig,
+} from "@/gantt/expander/column/header";
+import ExpanderListCell, {
+  ExpanderListCellConfig,
+} from "@/gantt/expander/column/list/cell";
+import { ReturnMergeTimeline } from "@/gantt/utils";
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
 
 const App = (props: { a: number }) => {
   const [count, setCount] = useState(1);
@@ -85,33 +85,39 @@ const TimelineCellRender = (props: { mergeTimeline: ReturnMergeTimeline }) => {
     startTime,
     endTime,
     id,
+    path,
   } = mergeTimeline;
   return (
     <>
-      <div style={{ fontSize: 12, wordBreak: "break-all" }}>
+      {/* <div style={{ fontSize: 12, wordBreak: "break-all" }}>
         {JSON.stringify(mergeTimeline)}
-      </div>
-      {/* <div
+      </div> */}
+      <div
         style={{
           fontSize: 12,
           display: "grid",
           width: "100%",
           height: "100%",
-          gridTemplateColumns: "repeat(3,120px)",
+          padding: "0 20px",
+          gridTemplateColumns: "repeat(3,100px)",
           gridTemplateRows: "repeat(2)",
         }}
       >
         {[
-          cellBeginCount,
-          cellFinishCount,
-          cellBottomCount,
-          cellTopCount,
+          id,
+          JSON.stringify(path),
+          JSON.stringify([
+            cellBeginCount,
+            cellFinishCount,
+            cellTopCount,
+            cellBottomCount,
+          ]),
           startTime,
           endTime,
         ].map((t, i) => {
           return <div key={i}>{t}</div>;
         })}
-      </div> */}
+      </div>
     </>
   );
 };

@@ -5,7 +5,9 @@ import {
 import { Gantt } from "../../../../gantt/index";
 import ExpanderListCell from "./cell";
 import Column from "..";
-import { MergeTimelineDataSource } from "@/gantt";
+import { MergeTimelineDataSource } from "../../../index.d";
+import { appendClassName, createElement } from "../../../utils";
+import { GanttExpanderListInnerClassName } from "../../../constant";
 
 type ListConfig = {
   container: HTMLElement;
@@ -41,7 +43,8 @@ class ExpanderList {
 
   drawInnerContainer() {
     /**  绘制滚动内层区域 */
-    this.innerContainer = document.createElement("div");
+    this.innerContainer = createElement("div");
+    appendClassName(this.innerContainer, [GanttExpanderListInnerClassName]);
     this.updateInnerContainer();
     this.container?.appendChild(this.innerContainer);
   }

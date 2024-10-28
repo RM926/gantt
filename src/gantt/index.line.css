@@ -1,3 +1,15 @@
+.gantt_timeline {
+  border-right: 1px solid rgb(141, 141, 233);
+}
+
+.gantt_timeline_inner {
+  background-image: linear-gradient(to right, #dbdfdfe7 1px, transparent 1px),
+    linear-gradient(to bottom, #dbdfdfe7 1px, transparent 1px);
+  background-size: 150px 50px;
+  /* 网格大小 */
+  background-position: top left;
+}
+
 .gantt_expander_list_cell {
   border: 1px solid rgb(141, 141, 233)
 }
@@ -14,4 +26,9 @@
 .gantt_timeline_cell_right_range {
   /* border: 1px solid rgb(124, 232, 154); */
   background: rgba(178, 238, 176, 0.667);
+}
+
+.gantt_timeline_cell_left_drag,
+.gantt_timeline_cell_right_drag {
+  background: rgb(104, 176, 243)
 }

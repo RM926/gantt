@@ -80,31 +80,42 @@ export const updateGanttDataSource = (payload: {
 
 export const getTimeRangeTime = (payload: {
   dataSource: GanttSourceData[];
+  expandIds?: (string | number)[];
+  result?: number[];
 }) => {
-  const { dataSource } = payload;
-  let start = 0;
-  let end = 0;
-
+  const { dataSource, expandIds = [], result = [] } = payload;
   for (const d of dataSource) {
-    for (const t of d.timelines) {
+    for (let t of d.timelines) {
       const { startTime, endTime } = t;
-      if (start === 0 && end === 0) {
-        start = startTime;
-        end = endTime;
-        continue;
+      if (!result?.length) {
+        result[0] = startTime;
+        result[1] = endTime;
+      } else {
+        result[0] = Math.min(result[0], startTime);
+        result[1] = Math.max(result[1], endTime);
       }
-      if (startTime <= start) start = startTime;
-      if (endTime >= end) end = endTime;
+    }
+    if (!expandIds?.includes(d.id)) {
+      continue;
+    }
+    if (d.children?.length) {
+      getTimeRangeTime({
+        dataSource: d.children,
+        expandIds,
+        result,
+      });
     }
   }
 
-  return [start, end];
+  return result;
 };
 
 export const getTimestampLineByTimeRange = (payload: {
   timeRange: (number | Date | string)[];
 }) => {
   const { timeRange } = payload;
+  if (timeRange?.length < 2) return [];
+
   const [start, end] = timeRange;
   const startTimestamp = getStartTime(new Date(start));
   const endTimestamp = getStartTime(new Date(end));
@@ -149,21 +160,16 @@ export const getMergeTimelines = (payload: {
   cellGap: number;
   path: (string | number)[];
 }): ReturnMergeTimeline[][] => {
-  const {
-    timelines,
-
-    timestampLine,
-    verticalCurrentRowIdx,
-    cellGap,
-    path,
-  } = payload;
+  const { timelines, timestampLine, verticalCurrentRowIdx, cellGap, path } =
+    payload;
   const currentBeginTime = timestampLine[0];
+
   const mergeTimelinesArray: ReturnMergeTimeline[][] = [];
 
   const diskArrayCount =
-    (timestampLine.slice(-1)[0] - currentBeginTime) / cellGap;
+    (timestampLine.slice(-1)[0] - currentBeginTime) / cellGap + 1;
 
-  const diskArray = [new Array(diskArrayCount).fill(0)];
+  const diskArray = !!diskArrayCount ? [new Array(diskArrayCount).fill(0)] : [];
 
   /** 找到单个数据位于的行数 */
   function findFillDiskArrayIndex(params: {
@@ -214,7 +220,6 @@ export const getMergeTimelines = (payload: {
     const { startTime, endTime, id } = t;
     const cellBeginCount = (startTime - currentBeginTime) / cellGap;
     const cellFinishCount = (endTime - startTime) / cellGap + cellBeginCount;
-
     const idx = findFillDiskArrayIndex({
       diskArray,
       begin: cellBeginCount,

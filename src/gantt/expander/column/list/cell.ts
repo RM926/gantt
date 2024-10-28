@@ -56,11 +56,9 @@ class ExpanderListCell {
 
   updateRender(it: ExpanderListCell) {}
 
-  // to render合并到updateRender中
   render(it: ExpanderListCell) {
     const div = document.createElement("div");
-    const { title, expandable, expand } =
-      this.mergeTimelineDataSource!;
+    const { title, expandable, expand } = this.mergeTimelineDataSource!;
     div.innerHTML = `${title}/${expandable}/${expand}`;
     this.cellElement?.append(div);
   }

@@ -1,59 +1,58 @@
-import MouseMoveStep from "../../../utils/mouse_move_step";
+import TimelineCell from "./index";
 import {
   appendChild,
   appendClassName,
   createElement,
+  ReturnMergeTimeline,
   updateElementStyles,
-} from "../../../utils/document";
-import TimelineCell from "./index";
-import { GanttTimelineCellContentClassName } from "../../../constant";
-import { MoveScrollOverflowConfig, ReturnMergeTimeline } from "../../../utils";
-
-export type TimelineCellContentConfig = {
+} from "../../../utils";
+import { GanttTimelineCellLeftDragClassName } from "../../../constant";
+import MouseMoveStep from "../../../utils/mouse_move_step";
+export type TimelineCellLeftDragConfig = {
   timelineCell: TimelineCell;
 };
-
-export class TimelineCellContent {
-  timelineCell?: TimelineCellContentConfig["timelineCell"];
+class TimelineCellLeftDrag {
   element?: HTMLElement;
   mouseMoveStep?: MouseMoveStep;
 
-  constructor(config: TimelineCellContentConfig) {
+  timelineCell?: TimelineCellLeftDragConfig["timelineCell"];
+
+  constructor(config: TimelineCellLeftDragConfig) {
     const { timelineCell } = config;
     if (timelineCell) this.timelineCell = timelineCell;
     this.create();
     this.initMouseMoveStep();
-    this.render(this);
   }
 
   create() {
     this.element = createElement("div");
     const styles = {
       position: "absolute",
-      width: "100%",
-      height: "100%",
+      top: "0px",
+      left: `0px`,
+      height: `100%`,
+      display: "none",
     };
-    appendClassName(this.element, [GanttTimelineCellContentClassName]);
     updateElementStyles(this.element, styles);
+    appendClassName(this.element, [GanttTimelineCellLeftDragClassName]);
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
   initMouseMoveStep() {
-    const { height: cellHeight, width: cellWidth } =
+    const { width: cellWidth } =
       this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
     const _that = this;
     this.mouseMoveStep = new MouseMoveStep({
       targetElement: this.element,
-      stepOffsetRate: [0.5, 0.5],
-      moveStep: [cellWidth, cellHeight],
+      stepOffsetRate: [0.5],
+      moveStep: [cellWidth],
       moveStatusChange(moving) {
         if (!_that.timelineCell) return;
-        _that.timelineCell.moving = moving;
+        _that.timelineCell.leftDragging = moving;
         _that.timelineCell.ganttTimeline?.moveOverflowScroll?.setScrollLock(
           !moving
         );
         if (!moving) {
-          // _that.gantt
           if (_that.timelineCell?.mergeTimeline)
             _that.timelineCell?.ganttTimeline?.changeCell(
               _that.timelineCell.mergeTimeline
@@ -62,30 +61,21 @@ export class TimelineCellContent {
       },
       moveStepCallback(payload) {
         const { type, changeStep } = payload;
+        console.log(type, changeStep);
         if (type === "x") {
           if (!_that.timelineCell) return;
-          const { endTime, startTime, cellFinishCount, cellBeginCount } =
+          const { startTime, cellBeginCount } =
             _that.timelineCell.mergeTimeline;
           const cellGap = _that.timelineCell.ganttTimeline?.gantt?.cellGap!;
           const newTimeline = {
             ..._that.timelineCell.mergeTimeline,
             startTime: startTime + changeStep * cellGap,
-            endTime: endTime + changeStep * cellGap,
-            cellFinishCount: cellFinishCount + changeStep,
             cellBeginCount: cellBeginCount + changeStep,
           };
-          _that.timelineCell.update({
-            mergeTimeline: newTimeline,
-          });
-        } else if (type === "y") {
-          if (!_that.timelineCell) return;
-          const { cellBottomCount, cellTopCount } =
-            _that.timelineCell.mergeTimeline;
-          const newTimeline = {
-            ..._that.timelineCell.mergeTimeline,
-            cellBottomCount: cellBottomCount + changeStep,
-            cellTopCount: cellTopCount + changeStep,
-          };
+          if (
+            !_that.updateDetect(newTimeline, _that.timelineCell.mergeTimeline)
+          )
+            return;
           _that.timelineCell.update({
             mergeTimeline: newTimeline,
           });
@@ -96,18 +86,28 @@ export class TimelineCellContent {
 
   /** 更新检测 */
   updateDetect(current: ReturnMergeTimeline, old: ReturnMergeTimeline) {
-    const { cellTopCount, cellBottomCount } = current;
-    const lastRowCount =
-      this.timelineCell?.ganttTimeline?.gantt?.getMergeTimelinesRowCount?.() ||
-      0;
-    return cellTopCount >= 0 && cellBottomCount <= lastRowCount;
+    const { cellBeginCount, cellFinishCount } = current;
+    return cellFinishCount - cellBeginCount > 0;
   }
 
   update() {
+    if (!this.timelineCell) return;
+    const { mergeTimeline, ganttTimeline } = this.timelineCell;
+    const { cellBeginCount, cellFinishCount } = mergeTimeline;
+    const [, , l, r] = ganttTimeline?.containerRange!;
+    const { width: cellWidth } =
+      this.timelineCell.ganttTimeline?.gantt?.styles?.cell!;
+
+    const [offsetLeft] = [l - cellBeginCount, r - cellFinishCount];
+    const styles = {
+      display: offsetLeft > 0 ? "none" : "block",
+    };
+
+    updateElementStyles(this.element!, styles);
     this.updateRender(this);
   }
 
-  render(it: TimelineCellContent) {}
-
-  updateRender(it: TimelineCellContent) {}
+  updateRender(it: TimelineCellLeftDrag) {}
 }
+
+export default TimelineCellLeftDrag;
