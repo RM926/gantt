@@ -1,5 +1,9 @@
 import { MouseEventHandler } from "react";
 
+/**
+ * 以当前target_row的位置为准，计算边缘
+ */
+
 export type MoveStepCallbackPayload = {
   type: "x" | "y";
   changeStep: number;

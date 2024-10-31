@@ -222,6 +222,7 @@ export function getMergeTimelinesSourceData(payload: {
     } = payload;
     for (let t of dataSource) {
       // console.log(t, father);
+      // console.log(t)
       const { children, timelines, ...other } = t;
       const mergeTimelines = getMergeTimelines({
         timelines,
@@ -245,6 +246,7 @@ export function getMergeTimelinesSourceData(payload: {
         expandable: !!t.children?.length,
         path: [t.id],
       };
+      console.log(newFather)
 
       if (!father) {
         result.push(newFather);

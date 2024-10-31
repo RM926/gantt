@@ -1,44 +1,41 @@
 import Gantt from "@/gantt";
+import MouseMoveGrid from "@/gantt/utils/mouse_move_grid";
 import MouseMoveStep from "@/gantt/utils/mouse_move_step copy";
 import { useEffect, useRef, useState } from "react";
 
 const MouseMoveStepTest = () => {
   const [position, setPosition] = useState([120, 120]);
   const [left, top] = position;
-  const ganttRef = useRef<Gantt>();
+  const mouseMoveGridRef = useRef<MouseMoveGrid>();
 
   useEffect(() => {
-    if (ganttRef.current) return;
-    ganttRef.current = new MouseMoveStep({
-      targetElement: document.querySelector("#container_ref")!,
-      moveStepCallback(payload) {
-        const { type, changeStep } = payload;
-        console.log(type, changeStep);
-        if (type === "x") {
-          setPosition((pre) => {
-            const [l, t] = pre;
-            return [l + changeStep, t];
-          });
-        } else if (type === "y") {
-          setPosition((pre) => {
-            const [l, t] = pre;
-            return [l, t + changeStep];
-          });
-        }
-      },
+    if (mouseMoveGridRef.current) return;
+    mouseMoveGridRef.current = new MouseMoveGrid({
+      gridContainer: document.querySelector("#grid") as HTMLElement,
+      target: document.querySelector("#container_ref") as HTMLElement,
     });
   }, []);
 
   return (
+    // <div
+    //   style={{
+    //     width: 200,
+    //     marginTop: 100,
+    //     marginLeft: 100,
+    //     height: 200,
+    //     overflow: "auto",
+    //   }}
+    // >
     <div
+      id="grid"
       style={{
-        marginTop: 100,
         position: "relative",
         display: "grid",
         gridTemplateRows: "repeat(6,1fr)",
         gridTemplateColumns: "repeat(6,1fr)",
         height: 360,
         width: 360,
+        marginTop: 400
       }}
     >
       <>
@@ -58,6 +55,7 @@ const MouseMoveStepTest = () => {
         })}
       </>
     </div>
+    // </div>
   );
 };
 

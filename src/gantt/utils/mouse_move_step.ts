@@ -191,7 +191,7 @@ class MouseMoveStep {
   };
 
   onmousedown = (e: any) => {
-    // console.log("down");
+    console.log("down");
     e.preventDefault();
     this.cloneElement();
     this.moving = true;
@@ -221,7 +221,7 @@ class MouseMoveStep {
   };
 
   onmouseup = (e: MouseEvent) => {
-    // console.log("up");
+    console.log("up");
     this.clear();
     if (this.moveStatusChange) this.moveStatusChange(this.moving);
   };

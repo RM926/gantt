@@ -36,7 +36,7 @@ const Page = () => {
   return (
     <div>
       <MouseMoveStepTest />
-      <div ref={containerRef} style={{ width: 700, height: 500 }} />
+      {/* <div ref={containerRef} style={{ width: 700, height: 500 }} /> */}
     </div>
   );
 };
