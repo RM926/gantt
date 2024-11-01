@@ -8,7 +8,7 @@ import {
 } from "@/app/sub";
 import { useEffect, useRef } from "react";
 import { loopTree } from "@/gantt/utils";
-import MouseMoveStepTest from "./sub/MouseMoveStep";
+import MouseMoveStepTest from "./sub/MouseMove";
 
 const Page = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -20,7 +20,7 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        timeRange: ["2024/10/01", "2025/10/1"],
+        timeRange: ["2024/9/29", "2025/10/1"],
         enhance: {
           timeline: {
             // cell: TTimelineListCell,
@@ -35,8 +35,8 @@ const Page = () => {
   }, []);
   return (
     <div>
-      <MouseMoveStepTest />
-      {/* <div ref={containerRef} style={{ width: 700, height: 500 }} /> */}
+      {/* <MouseMoveStepTest /> */}
+      <div ref={containerRef} style={{ width: 700, height: 500 }} />
     </div>
   );
 };

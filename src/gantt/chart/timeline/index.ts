@@ -3,11 +3,9 @@ import { MergeTimelineDataSource } from "../../../gantt/index.d";
 import Gantt from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
 import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
-import MoveOverflowScroll, {
-  MoveScrollOverflowConfig,
-} from "../../utils/move_overflow_scroll";
 import TimelineCell, { TimelineCellConfig } from "./cell";
 import { GanttTimelineInnerClassName } from "../../constant";
+import ScrollOverflow from "../../utils/scroll_overflow";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;
@@ -25,7 +23,7 @@ class GanttTimeline {
   innerContainer?: HTMLElement;
 
   gantt?: Gantt;
-  moveOverflowScroll?: MoveOverflowScroll;
+  scrollOverflow?: ScrollOverflow;
   enhance?: GanttTimelineConfig["enhance"];
 
   timelineCellMap = new Map<string, TimelineCell>();
@@ -54,24 +52,12 @@ class GanttTimeline {
     this.drawInnerContainer();
     this.registerEvent();
     this.onContainerScroll();
-    const { width, height } = (this.gantt?.styles?.cell ?? {}) as any;
     const _that = this;
-    this.moveOverflowScroll = new MoveOverflowScroll({
-      targetElement: _that.container!,
-      scrollStep: [width, height],
-      scrollStepChange: _that.scrollStepChange,
+    this.scrollOverflow = new ScrollOverflow({
+      container: _that.container!,
     });
-    this.moveOverflowScroll.setScrollLock(true);
+    this.scrollOverflow.setScrollLock(true);
   }
-
-  // 滚动出屏幕外处理逻辑
-  scrollStepChange: MoveScrollOverflowConfig["scrollStepChange"] = (
-    payload
-  ) => {
-    this.timelineCellMap.forEach((cell) => {
-      cell?.scrollStepChange?.(payload);
-    });
-  };
 
   drawInnerContainer() {
     /**  绘制滚动内层区域 */

@@ -246,7 +246,6 @@ export function getMergeTimelinesSourceData(payload: {
         expandable: !!t.children?.length,
         path: [t.id],
       };
-      console.log(newFather)
 
       if (!father) {
         result.push(newFather);

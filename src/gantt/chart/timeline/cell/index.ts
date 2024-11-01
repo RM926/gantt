@@ -1,6 +1,5 @@
 import GanttTimeline from "../index";
 import { ReturnMergeTimeline } from "../../../utils/merge";
-import MouseMoveStep from "../../../utils/mouse_move_step";
 import { GanttTimelineCellClassName } from "../../../constant";
 import { TimelineCellContent } from "./content";
 import { updateElementStyles } from "../../../utils/document";
@@ -8,7 +7,6 @@ import { TimelineCellLeftRange } from "./left_range";
 import { TimelineCellRightRange } from "./right_range";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
-import { MoveDirection, MoveScrollOverflowConfig } from "@/gantt/utils";
 
 export type TimelineCellConfig = {
   mergeTimeline: ReturnMergeTimeline;
@@ -19,7 +17,6 @@ export type TimelineCellConfig = {
 class TimelineCell {
   mergeTimeline: TimelineCellConfig["mergeTimeline"];
   cellElement?: HTMLElement;
-  mouseMoveStep?: MouseMoveStep;
 
   // 整体拖拽移动
   moving = false;
@@ -42,75 +39,6 @@ class TimelineCell {
     this.createCell();
     this.render(this);
   }
-
-  scrollStepChange: MoveScrollOverflowConfig["scrollStepChange"] = (
-    payload
-  ) => {
-    const { direction, changeStep } = payload;
-    if (this.moving) {
-      if (
-        direction === MoveDirection.RIGHT ||
-        direction === MoveDirection.LEFT
-      ) {
-        const { endTime, startTime, cellFinishCount, cellBeginCount } =
-          this.mergeTimeline;
-        const cellGap = this.ganttTimeline?.gantt?.cellGap!;
-        const newMergeTimeline = {
-          ...this.mergeTimeline,
-          startTime: startTime + changeStep * cellGap,
-          endTime: endTime + changeStep * cellGap,
-          cellFinishCount: cellFinishCount + changeStep,
-          cellBeginCount: cellBeginCount + changeStep,
-        };
-        this.update({ mergeTimeline: newMergeTimeline });
-      } else if (
-        direction === MoveDirection.TOP ||
-        direction === MoveDirection.BOTTOM
-      ) {
-        const { cellTopCount, cellBottomCount } = this.mergeTimeline;
-        const newMergeTimeline = {
-          ...this.mergeTimeline,
-          cellTopCount: cellTopCount + changeStep,
-          cellBottomCount: cellBottomCount + changeStep,
-        };
-        this.update({ mergeTimeline: newMergeTimeline });
-      }
-    }
-    if (this.leftDragging) {
-      if (
-        direction === MoveDirection.RIGHT ||
-        direction === MoveDirection.LEFT
-      ) {
-        console.log(direction, changeStep);
-        const { startTime, cellBeginCount } = this.mergeTimeline;
-        const cellGap = this.ganttTimeline?.gantt?.cellGap!;
-        const newMergeTimeline = {
-          ...this.mergeTimeline,
-          startTime: startTime + changeStep * cellGap,
-          cellBeginCount: cellBeginCount + changeStep,
-        };
-        if (!this.leftDrag?.updateDetect(newMergeTimeline, this.mergeTimeline))
-          return;
-        this.update({ mergeTimeline: newMergeTimeline });
-      }
-    }
-    if (this.rightDragging) {
-      if (
-        direction === MoveDirection.RIGHT ||
-        direction === MoveDirection.LEFT
-      ) {
-        console.log(direction, changeStep);
-        const { endTime, cellFinishCount } = this.mergeTimeline;
-        const cellGap = this.ganttTimeline?.gantt?.cellGap!;
-        const newMergeTimeline = {
-          ...this.mergeTimeline,
-          endTime: endTime + changeStep * cellGap,
-          cellFinishCount: cellFinishCount + changeStep,
-        };
-        this.update({ mergeTimeline: newMergeTimeline });
-      }
-    }
-  };
 
   createCell() {
     this.cellElement = document.createElement("div");
@@ -186,7 +114,6 @@ class TimelineCell {
 
   remove() {
     this.cellElement?.remove();
-    this.mouseMoveStep?.destroyed();
   }
 }
 

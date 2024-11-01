@@ -1,4 +1,3 @@
-import MouseMoveStep from "../../../utils/mouse_move_step";
 import {
   appendChild,
   appendClassName,
@@ -7,7 +6,8 @@ import {
 } from "../../../utils/document";
 import TimelineCell from "./index";
 import { GanttTimelineCellContentClassName } from "../../../constant";
-import { MoveScrollOverflowConfig, ReturnMergeTimeline } from "../../../utils";
+import { MouseStatus } from "../../../utils/mousemove";
+import MousemoveOffset from "../../../utils/mousemove_offset";
 
 export type TimelineCellContentConfig = {
   timelineCell: TimelineCell;
@@ -16,13 +16,13 @@ export type TimelineCellContentConfig = {
 export class TimelineCellContent {
   timelineCell?: TimelineCellContentConfig["timelineCell"];
   element?: HTMLElement;
-  mouseMoveStep?: MouseMoveStep;
+  mousemoveOffset?: MousemoveOffset;
 
   constructor(config: TimelineCellContentConfig) {
     const { timelineCell } = config;
     if (timelineCell) this.timelineCell = timelineCell;
     this.create();
-    this.initMouseMoveStep();
+    this.initMousemove();
     this.render(this);
   }
 
@@ -38,18 +38,26 @@ export class TimelineCellContent {
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
-  initMouseMoveStep() {
+  initMousemove() {
     const { height: cellHeight, width: cellWidth } =
       this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const bottomRange =
+      (this.timelineCell?.ganttTimeline?.gantt?.getMergeTimelinesRowCount() ??
+        0) * cellHeight;
+
     const _that = this;
-    this.mouseMoveStep = new MouseMoveStep({
-      targetElement: this.element,
-      stepOffsetRate: [0.5, 0.5],
+    this.mousemoveOffset = new MousemoveOffset({
+      target: this.element,
+      container: _that.timelineCell?.ganttTimeline?.container!,
       moveStep: [cellWidth, cellHeight],
-      moveStatusChange(moving) {
+      range: [0, bottomRange],
+      offsetRange: true,
+      mouseStatusChange(status) {
+        const moving =
+          status === MouseStatus.DOWN || status === MouseStatus.MOVE;
         if (!_that.timelineCell) return;
         _that.timelineCell.moving = moving;
-        _that.timelineCell.ganttTimeline?.moveOverflowScroll?.setScrollLock(
+        _that.timelineCell.ganttTimeline?.scrollOverflow?.setScrollLock(
           !moving
         );
         if (!moving) {
@@ -60,7 +68,7 @@ export class TimelineCellContent {
             );
         }
       },
-      moveStepCallback(payload) {
+      moveStepChange(payload) {
         const { type, changeStep } = payload;
         if (type === "x") {
           if (!_that.timelineCell) return;
@@ -94,17 +102,16 @@ export class TimelineCellContent {
     });
   }
 
-  /** 更新检测 */
-  updateDetect(current: ReturnMergeTimeline, old: ReturnMergeTimeline) {
-    const { cellTopCount, cellBottomCount } = current;
-    const lastRowCount =
-      this.timelineCell?.ganttTimeline?.gantt?.getMergeTimelinesRowCount?.() ||
-      0;
-    return cellTopCount >= 0 && cellBottomCount <= lastRowCount;
-  }
-
   update() {
     this.updateRender(this);
+    const { height: cellHeight } =
+      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const bottomRange =
+      (this.timelineCell?.ganttTimeline?.gantt?.getMergeTimelinesRowCount() ??
+        0) * cellHeight;
+    this.mousemoveOffset?.mousemove?.updateConfig({
+      range: [0, bottomRange],
+    });
   }
 
   render(it: TimelineCellContent) {}

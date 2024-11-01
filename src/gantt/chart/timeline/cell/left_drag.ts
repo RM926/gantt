@@ -3,17 +3,17 @@ import {
   appendChild,
   appendClassName,
   createElement,
-  ReturnMergeTimeline,
   updateElementStyles,
 } from "../../../utils";
 import { GanttTimelineCellLeftDragClassName } from "../../../constant";
-import MouseMoveStep from "../../../utils/mouse_move_step";
+import { MouseStatus } from "../../../utils/mousemove";
+import MousemoveOffset from "../../../utils/mousemove_offset";
 export type TimelineCellLeftDragConfig = {
   timelineCell: TimelineCell;
 };
 class TimelineCellLeftDrag {
   element?: HTMLElement;
-  mouseMoveStep?: MouseMoveStep;
+  mousemoveOffset?: MousemoveOffset;
 
   timelineCell?: TimelineCellLeftDragConfig["timelineCell"];
 
@@ -21,7 +21,7 @@ class TimelineCellLeftDrag {
     const { timelineCell } = config;
     if (timelineCell) this.timelineCell = timelineCell;
     this.create();
-    this.initMouseMoveStep();
+    this.initMousemoveOffset();
   }
 
   create() {
@@ -38,18 +38,24 @@ class TimelineCellLeftDrag {
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
-  initMouseMoveStep() {
+  initMousemoveOffset() {
     const { width: cellWidth } =
       this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const rightRange =
+      (this.timelineCell?.mergeTimeline?.cellFinishCount ?? 0) * cellWidth;
     const _that = this;
-    this.mouseMoveStep = new MouseMoveStep({
-      targetElement: this.element,
-      stepOffsetRate: [0.5],
+    this.mousemoveOffset = new MousemoveOffset({
+      target: _that.element,
+      container: _that.timelineCell?.ganttTimeline?.container,
       moveStep: [cellWidth],
-      moveStatusChange(moving) {
+      offsetRange: true,
+      range: [, , , rightRange],
+      mouseStatusChange(status) {
+        const moving =
+          status === MouseStatus.DOWN || status === MouseStatus.MOVE;
         if (!_that.timelineCell) return;
         _that.timelineCell.leftDragging = moving;
-        _that.timelineCell.ganttTimeline?.moveOverflowScroll?.setScrollLock(
+        _that.timelineCell.ganttTimeline?.scrollOverflow?.setScrollLock(
           !moving
         );
         if (!moving) {
@@ -59,9 +65,8 @@ class TimelineCellLeftDrag {
             );
         }
       },
-      moveStepCallback(payload) {
+      moveStepChange(payload) {
         const { type, changeStep } = payload;
-        console.log(type, changeStep);
         if (type === "x") {
           if (!_that.timelineCell) return;
           const { startTime, cellBeginCount } =
@@ -72,22 +77,13 @@ class TimelineCellLeftDrag {
             startTime: startTime + changeStep * cellGap,
             cellBeginCount: cellBeginCount + changeStep,
           };
-          if (
-            !_that.updateDetect(newTimeline, _that.timelineCell.mergeTimeline)
-          )
-            return;
+
           _that.timelineCell.update({
             mergeTimeline: newTimeline,
           });
         }
       },
     });
-  }
-
-  /** 更新检测 */
-  updateDetect(current: ReturnMergeTimeline, old: ReturnMergeTimeline) {
-    const { cellBeginCount, cellFinishCount } = current;
-    return cellFinishCount - cellBeginCount > 0;
   }
 
   update() {
@@ -102,6 +98,13 @@ class TimelineCellLeftDrag {
     const styles = {
       display: offsetLeft > 0 ? "none" : "block",
     };
+
+    const rightRange =
+      (this.timelineCell?.mergeTimeline?.cellFinishCount ?? 0) * cellWidth;
+
+    this.mousemoveOffset?.mousemove?.updateConfig({
+      range: [, , , rightRange],
+    });
 
     updateElementStyles(this.element!, styles);
     this.updateRender(this);
