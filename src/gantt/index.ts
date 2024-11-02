@@ -74,7 +74,7 @@ export class Gantt {
   timestampLine: TimestampLine[] = [];
   cellGap = BasicCellGap;
   timeRange: string[] = [];
-  styles = BasicStyles;
+  styles: GanttConfig["styles"] = BasicStyles;
   enhance?: GanttConfig["enhance"];
 
   expandIds?: (string | number)[];
@@ -88,9 +88,9 @@ export class Gantt {
     if (container) this.container = container;
     if (enhance) this.enhance = enhance;
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
-      this.draw();
-    // return;
+      this.draw()!;
     this.initData(otherConfig);
+    // return;
     const _that = this;
     // expander
     this.ganttColumns = [
@@ -150,9 +150,9 @@ export class Gantt {
   }
 
   draw() {
-    const ganttContainer = document.createElement("div");
+    if (!this.container) return;
     const randomClass = getRandomClass(GanttClassName);
-    ganttContainer.classList.add(GanttClassName, randomClass);
+    this.container!.classList.add(GanttClassName, randomClass);
     const htmlString = `
       <div class='${GanttExpanderClassName}'></div>
       <div class='${GanttChartClassName}'>
@@ -160,8 +160,7 @@ export class Gantt {
         <div class='${GanttTimelineClassName}'></div>
       </div>
     `;
-    ganttContainer.innerHTML = htmlString;
-    this.container!.appendChild(ganttContainer);
+    this.container.innerHTML = htmlString;
 
     const [
       expanderElement,
@@ -186,9 +185,10 @@ export class Gantt {
   }
 
   initData(config: Omit<GanttConfig, "container">) {
-    const { dataSource, cellGap, timeRange, expandIds } = config;
+    const { dataSource, cellGap, styles, timeRange, expandIds } = config;
     if (dataSource) this.dataSource = dataSource;
     if (cellGap) this.cellGap = cellGap;
+    if (styles) this.styles = { ...this.styles, ...styles };
     if (timeRange) this.timeRange = timeRange;
     if (expandIds) this.expandIds = expandIds;
     this.timestampLine = getTimestampLines(
@@ -251,8 +251,20 @@ export class Gantt {
     });
   };
 
-  getMergeTimelinesRowCount() {
-    return this.mergeTimelineSourceData?.slice(-1)[0]?.bottom || 0;
+  getMergeTimelinesRowCount(
+    mergeTimelineDataSource?: MergeTimelineDataSource,
+    bottom = 0
+  ): number {
+    const last =
+      mergeTimelineDataSource ?? this.mergeTimelineSourceData?.slice(-1)[0];
+    const currentBottom = Math.max(bottom, last?.bottom || 0);
+    if (last?.children?.length) {
+      return this.getMergeTimelinesRowCount(
+        last.children?.slice(-1)[0],
+        currentBottom
+      );
+    }
+    return currentBottom;
   }
 }
 

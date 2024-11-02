@@ -80,20 +80,11 @@ class GanttTimeline {
       const [key, value] = entry as unknown as [number, string];
       this.innerContainer!.style[key] = value;
     });
+    this.containerRange = this.getContainerRange();
   }
 
   onContainerScroll = (e?: Event) => {
-    const { scrollLeft = 0, scrollTop = 0 } = (e?.target ?? {}) as any;
-    const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell;
-    const { width, height } = this.container!.getBoundingClientRect() ?? {};
-
-    this.containerRange = [
-      scrollTop / cellHeight,
-      (scrollTop + height) / cellHeight,
-      scrollLeft / cellWidth,
-      (scrollLeft + width) / cellWidth,
-    ];
-
+    this.containerRange = this.getContainerRange();
     this.update();
     this.scrollCallback?.(e);
   };
@@ -194,6 +185,20 @@ class GanttTimeline {
     // 内层函数为一个CellGap更新一次，所以如果超出屏幕进行滚动,需要与屏幕滚动高度贴合的数据要在上层手动更新
     this.updateCellToContainer();
     this.removeCellInContainer();
+  }
+
+  getContainerRange(): number[] {
+    if (!this.container) return [];
+    const { scrollLeft = 0, scrollTop = 0 } = this.container;
+    const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell!;
+    const { width, height } = this.container!.getBoundingClientRect() ?? {};
+
+    return [
+      scrollTop / cellHeight,
+      (scrollTop + height) / cellHeight,
+      scrollLeft / cellWidth,
+      (scrollLeft + width) / cellWidth,
+    ];
   }
 
   /**

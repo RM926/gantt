@@ -30,13 +30,12 @@ class ExpanderListCell {
 
   updateContainer() {
     const { top, mergeTimelines } = this.mergeTimelineDataSource!;
-    const { height: cellHeight, width: cellWidth } =
-      this.expanderList?.gantt?.styles?.cell!;
+    const { height: cellHeight } = this.expanderList?.gantt?.styles?.cell!;
     const styles = {
       boxSizing: "border-box",
       position: "absolute",
+      width: "100%",
       height: `${Math.max(mergeTimelines?.length, 1) * cellHeight}px`,
-      width: `${cellWidth}px`,
       top: `${top * cellHeight}px`,
     };
 

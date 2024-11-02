@@ -1,3 +1,6 @@
+import CalenderListCell, {
+  CalenderListCellConfig,
+} from "@/gantt/chart/calender/list/cell";
 import TimelineCell, { TimelineCellConfig } from "@/gantt/chart/timeline/cell";
 import {
   TimelineCellContent,
@@ -73,6 +76,10 @@ const ExpanderListCellRender = (props: {
       {expandable && <div>{expand ? "close" : "open"}</div>}
     </div>
   );
+};
+
+const CalenderListCellRender = (props: { time: string | number }) => {
+  return <div style={{ textAlign: "center" }}>{props?.time}</div>;
 };
 
 const TimelineCellRender = (props: { mergeTimeline: ReturnMergeTimeline }) => {
@@ -153,6 +160,19 @@ export class TExpanderListCell extends ExpanderListCell {
   updateRender(it: ExpanderListCell) {
     if (!this.root) this.root = createRoot(it.cellElement!);
     this.root.render(<ExpanderListCellRender expanderListCell={it} />);
+  }
+}
+
+export class TCalenderListCell extends CalenderListCell {
+  root?: any;
+  constructor(config: CalenderListCellConfig) {
+    super(config);
+  }
+
+  render(it: CalenderListCell) {
+    if (!this.root) this.root = createRoot(it.cellElement!);
+    const time = new Date(it.timestamp?.value!).getDate();
+    this.root.render(<CalenderListCellRender time={time} />);
   }
 }
 

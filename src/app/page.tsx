@@ -2,6 +2,7 @@
 import Gantt from "@/gantt";
 import { data } from "@/gantt/data_source";
 import {
+  TCalenderListCell,
   TExpanderListCell,
   TTimelineCellContent,
   TTimelineListCell,
@@ -22,6 +23,9 @@ const Page = () => {
         dataSource: data,
         expandIds: ["1"],
         timeRange: ["2024/9/29", "2025/10/1"],
+        styles: {
+          cell: { width: 50, height: 50 },
+        },
         enhance: {
           timeline: {
             // cell: TTimelineListCell,
@@ -31,6 +35,9 @@ const Page = () => {
           expanderLabel: {
             cell: TExpanderListCell as any,
           },
+          calender: {
+            cell: TCalenderListCell as any,
+          },
         },
       });
     }
@@ -38,7 +45,13 @@ const Page = () => {
   return (
     <div>
       {/* <MouseMoveStepTest /> */}
-      <div ref={containerRef} style={{ width: 700, height: 500 }} />
+      <div
+        ref={containerRef}
+        style={{
+          width: "calc(100% - 100px)",
+          maxHeight: "100vh",
+        }}
+      />
     </div>
   );
 };

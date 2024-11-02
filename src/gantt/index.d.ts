@@ -15,13 +15,14 @@ export type GanttSourceData = {
 
 type TimeRangeDate = string | number | Date;
 
-export type MergeTimelineDataSource = GanttSourceData & {
+export type MergeTimelineDataSource = Omit<GanttSourceData, "children"> & {
   path: (number | string)[];
   top: number;
   bottom: number;
   expand: boolean;
   expandable: boolean;
   mergeTimelines: ReturnMergeTimeline[][];
+  children?: MergeTimelineDataSource[];
 };
 
 export type TimestampLine = {

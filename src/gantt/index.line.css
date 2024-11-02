@@ -5,7 +5,7 @@
 .gantt_timeline_inner {
   background-image: linear-gradient(to right, #dbdfdfe7 1px, transparent 1px),
     linear-gradient(to bottom, #dbdfdfe7 1px, transparent 1px);
-  background-size: 150px 50px;
+  background-size: 50px 50px;
   /* 网格大小 */
   background-position: top left;
 }

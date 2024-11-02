@@ -66,18 +66,7 @@ class CalenderList {
   }
 
   onContainerScroll = (e?: Event) => {
-    const { scrollLeft = 0, scrollTop = 0 } = (e?.target ?? {}) as any;
-
-    const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell;
-    const { width, height } = this.container!.getBoundingClientRect() ?? {};
-
-    this.containerRange = [
-      scrollTop / cellHeight,
-      (scrollTop + height) / cellHeight,
-      scrollLeft / cellWidth,
-      (scrollLeft + width) / cellWidth,
-    ];
-
+    this.containerRange = this.getContainerRange();
     this.update();
     this.scrollCallback?.(e);
   };
@@ -88,7 +77,7 @@ class CalenderList {
 
   updateInnerContainer() {
     if (!this.innerContainer) return;
-    const { width: cellWidth } = this.gantt!.styles?.cell;
+    const { width: cellWidth } = this.gantt!.styles?.cell!;
 
     const styles = {
       position: "relative",
@@ -100,6 +89,7 @@ class CalenderList {
       const [key, value] = entry as unknown as [number, string];
       this.innerContainer!.style[key] = value;
     });
+    this.containerRange = this.getContainerRange();
   }
 
   update() {
@@ -139,6 +129,16 @@ class CalenderList {
         if (i >= r) return;
       }
     }
+  }
+
+  getContainerRange(): number[] {
+    if (!this.container) return [];
+    const { scrollLeft = 0 } = this.container;
+
+    const { width: cellWidth } = this.gantt!.styles?.cell!;
+    const { width } = this.container!.getBoundingClientRect() ?? {};
+
+    return [0, 0, scrollLeft / cellWidth, (scrollLeft + width) / cellWidth];
   }
 
   scrollTo(position?: { x?: number; y?: number }) {

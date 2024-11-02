@@ -65,7 +65,7 @@ class Column {
 
   createHeader(container: HTMLElement) {
     const h = this?.enhance?.header || ExpanderHeader;
-    this.header = new h({
+    this.header = new (h as any)({
       container,
       gantt: this.gantt,
     });
@@ -82,7 +82,7 @@ class Column {
 
   createCell(config: ExpanderListCellConfig) {
     const c = this?.enhance?.cell || ExpanderListCell;
-    return new c(config);
+    return new (c as any)(config);
   }
 }
 

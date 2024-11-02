@@ -50,18 +50,7 @@ class ExpanderList {
   }
 
   onContainerScroll = (e?: Event) => {
-    const { scrollLeft = 0, scrollTop = 0 } = (e?.target ?? {}) as any;
-
-    const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell;
-    const { width, height } = this.container!.getBoundingClientRect() ?? {};
-
-    this.containerRange = [
-      scrollTop / cellHeight,
-      (scrollTop + height) / cellHeight,
-      scrollLeft / cellWidth,
-      (scrollLeft + width) / cellWidth,
-    ];
-
+    this.containerRange = this.getContainerRange();
     this.update();
     this.scrollCallback?.(e);
   };
@@ -72,11 +61,10 @@ class ExpanderList {
 
   updateInnerContainer() {
     if (!this.innerContainer) return;
-    const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell;
+    const { height: cellHeight } = this.gantt!.styles?.cell!;
 
     const styles = {
       position: "relative",
-      width: `${cellWidth}px`,
       height: `${cellHeight * this.gantt!.getMergeTimelinesRowCount()}px`,
       boxSizing: "border-box",
     };
@@ -84,6 +72,7 @@ class ExpanderList {
       const [key, value] = entry as unknown as [number, string];
       this.innerContainer!.style[key] = value;
     });
+    this.containerRange = this.getContainerRange();
   }
 
   renderExpanderCell(mergeTimelineDataSource: MergeTimelineDataSource) {
@@ -123,11 +112,10 @@ class ExpanderList {
           _that.renderExpanderCell(d);
           _that.updateCollectCellId?.push(d.id);
         }
-        // todo 跳出循环条件
         if (top > b) return;
 
         if (children?.length) {
-          renderLoop(children as MergeTimelineDataSource);
+          renderLoop(children as MergeTimelineDataSource[]);
         }
       }
     }
@@ -155,6 +143,15 @@ class ExpanderList {
   update() {
     this.updateCellToContainer();
     this.removeCellInContainer();
+  }
+
+  getContainerRange(): number[] {
+    if (!this.container) return [];
+    const { scrollTop = 0 } = this.container;
+    const { height: cellHeight } = this.gantt!.styles?.cell!;
+    const { height } = this.container!.getBoundingClientRect() ?? {};
+
+    return [scrollTop / cellHeight, (scrollTop + height) / cellHeight];
   }
 
   scrollTo(position?: { x?: number; y?: number }) {
