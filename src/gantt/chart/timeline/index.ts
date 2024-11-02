@@ -219,7 +219,7 @@ class GanttTimeline {
 
   createCell(config: TimelineCellConfig): TimelineCell {
     const c = this.enhance?.cell || TimelineCell;
-    return new c(config);
+    return new (c as any)(config);
   }
 }
 

@@ -24,7 +24,7 @@ class CalenderHeader {
 
   render(it: CalenderHeader) {
     const div = document.createElement("div");
-    div.innerHTML = "label";
+    div.innerHTML = "calender header";
     this.container?.appendChild(div);
   }
 

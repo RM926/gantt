@@ -59,7 +59,7 @@ class ExpanderListCell {
   render(it: ExpanderListCell) {
     const div = document.createElement("div");
     const { title, expandable, expand } = this.mergeTimelineDataSource!;
-    div.innerHTML = `${title}/${expandable}/${expand}`;
+    div.innerHTML = `${title} ${expandable ? "open:" + expand : ""}`;
     this.cellElement?.append(div);
   }
 

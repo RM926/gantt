@@ -48,7 +48,9 @@ class TimelineCellRightDrag {
     this.mousemoveOffset = new MousemoveOffset({
       target: this.element,
       container: _that.timelineCell?.ganttTimeline?.container,
+      girdContainer: _that.timelineCell?.ganttTimeline?.innerContainer,
       moveStep: [cellWidth],
+      offsetRange: true,
       range: [, , leftRange],
       mouseStatusChange(status) {
         const moving =

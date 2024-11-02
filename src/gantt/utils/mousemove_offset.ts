@@ -1,22 +1,23 @@
 import Mousemove, { MousemoveConfig, MouseStatus } from "./mousemove";
 import ScrollOffset from "./scroll_offset";
-
+type MousemoveOffsetConfig = MousemoveConfig & { girdContainer?: HTMLElement };
 class MousemoveOffset {
   scrollOffset?: ScrollOffset;
   mousemove?: Mousemove;
-  config?: MousemoveConfig;
+  config?: MousemoveOffsetConfig;
 
-  constructor(config: MousemoveConfig) {
+  constructor(config: MousemoveOffsetConfig) {
     this.config = config;
     this._init();
   }
 
   _init() {
-    const { container, mouseStatusChange, ...other } = this.config!;
+    const { girdContainer, container, mouseStatusChange, ...other } =
+      this.config!;
     const _that = this;
     this.mousemove = new Mousemove({
       ...other,
-      container,
+      container: girdContainer,
       mouseStatusChange: (status) => {
         mouseStatusChange?.(status);
         if (status === MouseStatus.DOWN) {
@@ -26,7 +27,6 @@ class MousemoveOffset {
               offsetChange: ({ type, changeStep }) => {
                 if (_that.mousemove?.moving) {
                   const [bx, by] = _that.mousemove.containerBegin;
-
                   if (type === "x") {
                     _that.mousemove.containerBegin = [bx + changeStep, by];
                   }

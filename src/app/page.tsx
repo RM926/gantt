@@ -9,6 +9,7 @@ import {
 import { useEffect, useRef } from "react";
 import { loopTree } from "@/gantt/utils";
 import MouseMoveStepTest from "./sub/MouseMove";
+import { TimelineCellContent } from "@/gantt/chart/timeline/cell/content";
 
 const Page = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -24,10 +25,11 @@ const Page = () => {
         enhance: {
           timeline: {
             // cell: TTimelineListCell,
-            cellContent: TTimelineCellContent,
+            // todo TS类型
+            cellContent: TTimelineCellContent as any,
           },
           expanderLabel: {
-            cell: TExpanderListCell,
+            cell: TExpanderListCell as any,
           },
         },
       });

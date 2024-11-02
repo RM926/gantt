@@ -1,16 +1,9 @@
 /**
- * 鼠标定点确定当前的在grid的落点计算
  *
- * 如果滚出容器外，计算上屏幕外移动的位置
- * 容器外移动的距离 +
- * 容器开始滚动的位置到容器当前滚动的位置
- *
- *
- * 第二方案：
- * 鼠标定点计算当前的grid落点 ---> 同步到document中，拖拽移动距离来计算网格位置
- *                               + 滚动计算
- *  document滚动距离 + 滚动的距离 + grid落点 = 即为当前的落点
- *  move事件挂载到document上
+ * 鼠标移动当前位置计算：
+ *  mousemove 挂载在document上,
+ *  ---> grid落点的位置 + document移动的距离 + grid container 容器滚动的距离
+ *  = grid准确的位置
  *
  */
 
@@ -93,8 +86,10 @@ class Mousemove {
     const [matrixX, matrixY] = this.matrix;
     const [lastMatrixX, lastMatrixY] = this.lastMatrix;
 
+    const [moveStepX, moveStepY] = this.moveStep;
+
     // x方向  // range 在上层处理
-    if (matrixX !== lastMatrixX) {
+    if (matrixX !== lastMatrixX && typeof moveStepX !== "undefined") {
       const changeMatrixX = matrixX - lastMatrixX;
       this.lastMatrix = [lastMatrixX + changeMatrixX, lastMatrixY];
       const payload = {
@@ -107,7 +102,7 @@ class Mousemove {
       // console.log("x", payload);
     }
 
-    if (matrixY !== lastMatrixY) {
+    if (matrixY !== lastMatrixY && typeof moveStepY !== "undefined") {
       const changeMatrixY = matrixY - lastMatrixY;
       this.lastMatrix = [matrixX, lastMatrixY + changeMatrixY];
       const payload = {
@@ -125,6 +120,7 @@ class Mousemove {
     e.preventDefault();
     const { clientX, clientY } = e;
     const { left, top } = this.container?.getBoundingClientRect()!;
+
     this.containerBegin = [clientX - left, clientY - top];
   };
 

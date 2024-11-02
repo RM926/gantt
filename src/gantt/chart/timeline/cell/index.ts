@@ -79,23 +79,23 @@ class TimelineCell {
     const { cellContent, leftRange, rightRange, leftDrag, rightDrag } =
       this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
     const CellContent = cellContent ?? TimelineCellContent;
-    this.content = new CellContent({
+    this.content = new (CellContent as any)({
       timelineCell: this,
     });
     const LeftRange = leftRange ?? TimelineCellLeftRange;
-    this.leftRange = new LeftRange({
+    this.leftRange = new (LeftRange as any)({
       timelineCell: this,
     });
     const RightRange = rightRange ?? TimelineCellRightRange;
-    this.rightRange = new RightRange({
+    this.rightRange = new (RightRange as any)({
       timelineCell: this,
     });
     const LeftDrag = leftDrag ?? TimelineCellLeftDrag;
-    this.leftDrag = new LeftDrag({
+    this.leftDrag = new (LeftDrag as any)({
       timelineCell: this,
     });
     const RightDrag = rightDrag ?? TimelineCellRightDrag;
-    this.rightDrag = new RightDrag({
+    this.rightDrag = new (RightDrag as any)({
       timelineCell: this,
     });
   }

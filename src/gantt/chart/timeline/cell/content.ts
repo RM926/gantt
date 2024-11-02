@@ -49,6 +49,7 @@ export class TimelineCellContent {
     this.mousemoveOffset = new MousemoveOffset({
       target: this.element,
       container: _that.timelineCell?.ganttTimeline?.container!,
+      girdContainer: _that.timelineCell?.ganttTimeline?.innerContainer,
       moveStep: [cellWidth, cellHeight],
       range: [0, bottomRange],
       offsetRange: true,

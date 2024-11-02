@@ -62,12 +62,12 @@ export class ScrollBar {
     };
 
     Object.entries(xScrollBarOuterDomStyles).map((entry) => {
-      const [key, value] = entry;
+      const [key, value] = entry as unknown as [number,string]
       xScrollBarOuterDom.style[key] = value;
     });
 
     Object.entries(xScrollBarDomStyles).map((entry) => {
-      const [key, value] = entry;
+      const [key, value] = entry as unknown as [number,string]
       xScrollBarDom.style[key] = value;
     });
     xScrollBarOuterDom.appendChild(xScrollBarDom);
@@ -77,7 +77,7 @@ export class ScrollBar {
     const _thatTarget = this.target;
     this.xMouseMoveStep = new MouseMove({
       target: this.xScrollBar,
-      mouseMoveStepChange: (payload) => {
+      moveStepChange: (payload) => {
         if (!_thatTarget) return;
         const { type, changeStep } = payload;
         const { width: innerWidth } = _thatTarget.getBoundingClientRect();
@@ -121,7 +121,7 @@ export class ScrollBar {
     };
 
     Object.entries(yScrollBarOuterDomStyles).map((entry) => {
-      const [key, value] = entry;
+      const [key, value] = entry as unknown as [number,string];
       yScrollBarOuterDom.style[key] = value;
     });
 
@@ -136,7 +136,7 @@ export class ScrollBar {
     const _thatTarget = this.target;
     this.yMouseMoveStep = new MouseMove({
       target: this.yScrollBar,
-      mouseMoveStepChange: (payload) => {
+      moveStepChange: (payload) => {
         if (!_thatTarget) return;
         const { type, changeStep } = payload;
         const { height: innerHeight } = _thatTarget.getBoundingClientRect();

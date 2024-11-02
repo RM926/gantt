@@ -14,7 +14,6 @@ import {
 } from "./index.d";
 import "./index.css";
 import "./index.line.css";
-import MoveOverflowScroll from "./utils/move_overflow_scroll";
 import { getTimestampLineByTimeRange } from "./utils/merge";
 import { getTimeRangeTime, getTimestampLines } from "./utils/merge";
 import Column from "./expander/column";
@@ -47,28 +46,27 @@ export type GanttConfig = {
   expandIds?: (string | number)[];
   styles?: Partial<typeof BasicStyles>;
   enhance?: Partial<{
-    expanderLabel: {
+    expanderLabel: Partial<{
       header?: ExpanderHeader;
       cell?: ExpanderListCell;
-    };
-    timeline: {
+    }>;
+    timeline: Partial<{
       cell: TimelineCell;
       cellContent: TimelineCellContent;
       leftRange: TimelineCellLeftRange;
       rightRange: TimelineCellRightRange;
       leftDrag: TimelineCellLeftDrag;
       rightDrag: TimelineCellRightDrag;
-    };
-    calender: {
+    }>;
+    calender: Partial<{
       header: CalenderHeader;
       cell: CalenderListCell;
-    };
+    }>;
   }>;
 };
 
 export class Gantt {
   container: GanttConfig["container"];
-  moveOverflowScroll?: MoveOverflowScroll;
 
   dataSource?: GanttConfig["dataSource"];
   mergeTimelineSourceData?: MergeTimelineDataSource[];

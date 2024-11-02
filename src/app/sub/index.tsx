@@ -162,8 +162,7 @@ export class TTimelineListCell extends TimelineCell {
     super(config);
   }
 
-  // 覆盖原来的内容
-  render(it: TimelineCell) {}
+  createSub() {}
 
   // 创建新的内容
   updateRender(it: TimelineCell) {

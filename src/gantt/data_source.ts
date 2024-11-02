@@ -18,30 +18,6 @@ const data: GanttSourceData[] = [
         startTime: getStartTime(new Date("2024/10/2")),
         endTime: getStartTime(new Date("2024/10/3")),
       },
-      {
-        id: "timeline_0_2",
-        title: "timeline_0_2",
-        startTime: getStartTime(new Date("2024/9/29")),
-        endTime: getStartTime(new Date("2024/10/1")),
-      },
-      {
-        id: "timeline_0_3",
-        title: "timeline_0_3",
-        startTime: getStartTime(new Date("2024/10/5")),
-        endTime: getStartTime(new Date("2024/10/7")),
-      },
-      {
-        id: "timeline_0_4",
-        title: "timeline_0_4",
-        startTime: getStartTime(new Date("2024/10/5")),
-        endTime: getStartTime(new Date("2024/10/7")),
-      },
-      {
-        id: "timeline_0_5",
-        title: "timeline_0_5",
-        startTime: getStartTime(new Date("2024/10/6")),
-        endTime: getEndTime(new Date("2024/10/7")),
-      },
     ],
     children: [
       {
