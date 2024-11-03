@@ -5,6 +5,7 @@ import {
 import { Gantt } from "../../../../gantt/index";
 import CalenderListCell, { CalenderListCellConfig } from "./cell";
 import Calender from "..";
+import ResizeObserverDom from "../../../utils/resize-observer-dom";
 
 type ListConfig = {
   container: HTMLElement;
@@ -35,7 +36,9 @@ class CalenderList {
     if (gantt) this.gantt = gantt;
     if (scrollCallback) this.scrollCallback = scrollCallback;
     if (calender) this.calender = calender;
-
+    new ResizeObserverDom(this.container!).observerSize(() => {
+      this.update();
+    });
     this.drawInnerContainer();
     this.registerEvent();
     this.onContainerScroll();
@@ -93,6 +96,7 @@ class CalenderList {
   }
 
   update() {
+    this.updateInnerContainer();
     this.updateCellToContainer();
     this.removeCellInContainer();
   }

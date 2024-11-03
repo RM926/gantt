@@ -241,12 +241,9 @@ export class Gantt {
 
   update = (config: Omit<GanttConfig, "container">) => {
     this.initData(config);
-    this.ganttCalender?.list?.updateInnerContainer();
     this.ganttCalender?.list?.update();
-    this.ganttTimeline?.updateInnerContainer();
     this.ganttTimeline?.update();
     this.ganttColumns?.forEach((c) => {
-      c.list?.updateInnerContainer();
       c.list?.update();
     });
   };

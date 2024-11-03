@@ -67,7 +67,7 @@ class Calender {
 
   createHeader(container: HTMLElement) {
     const h = this?.enhance?.header || CalenderHeader;
-    this.header = new h({
+    this.header = new (h as any)({
       container,
       gantt: this.gantt,
     });
@@ -85,7 +85,7 @@ class Calender {
 
   createCell(config: CalenderListCellConfig): CalenderListCell {
     const c = this?.enhance?.cell || CalenderListCell;
-    return new c(config);
+    return new (c as any)(config);
   }
 }
 

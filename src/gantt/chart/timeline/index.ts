@@ -6,6 +6,7 @@ import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
 import TimelineCell, { TimelineCellConfig } from "./cell";
 import { GanttTimelineInnerClassName } from "../../constant";
 import ScrollOverflow from "../../utils/scroll_overflow";
+import ResizeObserverDom from "../../utils/resize-observer-dom";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;
@@ -56,6 +57,9 @@ class GanttTimeline {
     this.scrollOverflow = new ScrollOverflow({
       container: _that.container!,
     });
+    new ResizeObserverDom(_that.container!).observerSize(() => {
+      _that.update();
+    });
     this.scrollOverflow.setScrollLock(true);
   }
 
@@ -74,8 +78,8 @@ class GanttTimeline {
       width: `${cellWidth * this.gantt!.timestampLine?.length}px`,
       height: `${cellHeight * this.gantt!.getMergeTimelinesRowCount()}px`,
       boxSizing: "border-box",
+      backgroundSize: `${cellWidth}px ${cellHeight}px`,
     };
-    // console.log(styles, "styles");
     Object.entries(styles).forEach((entry) => {
       const [key, value] = entry as unknown as [number, string];
       this.innerContainer!.style[key] = value;
@@ -153,8 +157,7 @@ class GanttTimeline {
   }
 
   updateCellToContainer() {
-    // 添加
-    const [t, b] = this.containerRange;
+    const [, b] = this.containerRange;
     this.updateCollectCellId = [];
     const _that = this;
     function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
@@ -182,6 +185,7 @@ class GanttTimeline {
   }
 
   update() {
+    this.updateInnerContainer();
     // 内层函数为一个CellGap更新一次，所以如果超出屏幕进行滚动,需要与屏幕滚动高度贴合的数据要在上层手动更新
     this.updateCellToContainer();
     this.removeCellInContainer();

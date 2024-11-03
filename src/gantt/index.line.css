@@ -2,11 +2,10 @@
   border-right: 1px solid rgb(141, 141, 233);
 }
 
+/* 网格线 */
 .gantt_timeline_inner {
   background-image: linear-gradient(to right, #dbdfdfe7 1px, transparent 1px),
     linear-gradient(to bottom, #dbdfdfe7 1px, transparent 1px);
-  background-size: 50px 50px;
-  /* 网格大小 */
   background-position: top left;
 }
 
