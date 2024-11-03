@@ -9,7 +9,7 @@ export type GanttSourceDataTimeline = {
 export type GanttSourceData = {
   id: string | number;
   title: string;
-  timelines: GanttSourceDataTimeline[];
+  timelines?: GanttSourceDataTimeline[];
   children?: GanttSourceData[];
 };
 

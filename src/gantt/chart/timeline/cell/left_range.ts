@@ -27,7 +27,7 @@ export class TimelineCellLeftRange {
       top: "0px",
       left: `0px`,
       height: `100%`,
-      display: "none",
+      // display: "none",
     };
     updateElementStyles(this.element, styles);
     appendClassName(this.element, [GanttTimelineCellLeftRangeClassName]);
@@ -45,7 +45,7 @@ export class TimelineCellLeftRange {
     const [offsetLeft] = [l - cellBeginCount, r - cellFinishCount];
     const styles = {
       display: offsetLeft > 0 ? "block" : "none",
-      left: offsetLeft * cellWidth + "px",
+      transform: `translateX(${offsetLeft * cellWidth}px)`,
     };
 
     updateElementStyles(this.element!, styles);

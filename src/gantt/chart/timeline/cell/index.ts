@@ -7,6 +7,7 @@ import { TimelineCellLeftRange } from "./left_range";
 import { TimelineCellRightRange } from "./right_range";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
+import TimelineCellVisualContent from "./visual_content";
 
 export type TimelineCellConfig = {
   mergeTimeline: ReturnMergeTimeline;
@@ -31,6 +32,8 @@ class TimelineCell {
   rightRange?: TimelineCellRightRange;
   leftDrag?: TimelineCellLeftDrag;
   rightDrag?: TimelineCellRightDrag;
+
+  visualContent?: TimelineCellVisualContent;
 
   constructor(config: TimelineCellConfig) {
     const { mergeTimeline, ganttTimeline } = config;
@@ -98,6 +101,11 @@ class TimelineCell {
     this.rightDrag = new (RightDrag as any)({
       timelineCell: this,
     });
+
+    const VisualContent = TimelineCellVisualContent;
+    this.visualContent = new VisualContent({
+      timelineCell: this,
+    });
   }
 
   updateSub(it: TimelineCell) {
@@ -106,6 +114,7 @@ class TimelineCell {
     this.rightRange?.update();
     this.leftDrag?.update();
     this.rightDrag?.update();
+    this.visualContent?.update();
   }
 
   render(it: TimelineCell) {}

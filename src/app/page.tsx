@@ -22,7 +22,7 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        timeRange: ["2024/9/29", "2025/10/1"],
+        timeRange: ["2024/9/29", "2026/10/1"],
         styles: {
           cell: { width: 50, height: 40 },
         },

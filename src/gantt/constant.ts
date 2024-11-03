@@ -7,7 +7,8 @@ export const GanttExpanderColumnClassName = "gantt_expander_column";
 export const GanttExpanderColumnHeaderClassName =
   "gantt_expander_column_header";
 export const GanttExpanderListClassName = "gantt_expander_column_list";
-export const GanttExpanderListInnerClassName='gantt_expander_column_list_inner'
+export const GanttExpanderListInnerClassName =
+  "gantt_expander_column_list_inner";
 export const GanttExpanderListCellClassName = "gantt_expander_list_cell";
 
 export const GanttChartClassName = "gantt_chart";
@@ -20,6 +21,10 @@ export const GanttTimelineClassName = "gantt_timeline";
 export const GanttTimelineInnerClassName = "gantt_timeline_inner";
 export const GanttTimelineCellClassName = "gantt_timeline_cell";
 export const GanttTimelineCellContentClassName = "gantt_timeline_cell_content";
+
+export const GanttTimelineCellVisualContentClassName =
+  "gantt_timeline_cell_visual_content";
+
 export const GanttTimelineCellLeftRangeClassName =
   "gantt_timeline_cell_left_range";
 

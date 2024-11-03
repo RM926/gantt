@@ -58,51 +58,6 @@ export const getContainType = (payload: {
   return type;
 };
 
-export const judgeShowInContainer = (payload: {
-  mergeTimeline: ReturnMergeTimeline;
-  showCellCount: [number, number];
-  offsetCellCount: [number, number];
-}): [boolean, ContainTypeEnum] => {
-  const {
-    mergeTimeline: {
-      cellBeginCount,
-      cellFinishCount,
-      cellTopCount,
-      cellBottomCount,
-    },
-    showCellCount: [showX, showY],
-    offsetCellCount: [offsetX, offsetY],
-  } = payload;
-
-  const xContain: [number, number] = [cellBeginCount, cellFinishCount];
-  const xContained: [number, number] = [offsetX, offsetX + showX];
-
-  /** 取反 */
-  const xShow = !judgeContainType({
-    contain: xContain,
-    contained: xContained,
-    type: ContainTypeEnum.NONE,
-  });
-
-  const yShow = !judgeContainType({
-    contain: [cellTopCount, cellBottomCount],
-    contained: [offsetY, offsetY + showY],
-    type: ContainTypeEnum.NONE,
-  });
-
-  // console.log(
-  //   cellTopCount,
-  //   cellBottomCount,
-  //   yTop,
-  //   yBottom,
-  //   "cellTopCount,cellBottomCount,yTop,yBottom"
-  // );
-  const cellOverflowType = !xShow
-    ? ContainTypeEnum.NONE
-    : getContainType({ contain: xContain, contained: xContained });
-  return [yShow && xShow, cellOverflowType];
-};
-
 export const judgeOverflowStep = (payload: {
   begin: number;
   finish: number;
@@ -116,4 +71,32 @@ export const judgeOverflowStep = (payload: {
       ? Math.floor(changeStep)
       : Math.ceil(changeStep)
     : 0;
+};
+
+export const getIntersectRange = (
+  line1: [number, number],
+  line2: [number, number]
+) => {
+  const [line1L, line1R] = line1;
+  const [line2L, line2R] = line2;
+  const L1 = line1L <= line1R ? line1 : [line1R, line1L];
+  const L2 = line2L <= line2R ? line2 : [line2R, line2L];
+  if (
+    !(
+      judgeContainType({
+        contain: line1,
+        contained: line2,
+        type: ContainTypeEnum.NONE,
+      }) &&
+      judgeContainType({
+        contain: line2,
+        contained: line1,
+        type: ContainTypeEnum.NONE,
+      })
+    )
+  ) {
+    const [l1L, l1R] = L1;
+    const [l2L, l2R] = L2;
+    return [Math.max(l1L, l2L), Math.min(l1R, l2R)] as [number, number];
+  }
 };

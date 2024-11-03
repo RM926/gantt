@@ -1,7 +1,13 @@
 ![example](https://raw.githubusercontent.com/RM926/gantt/refs/heads/master/src/images/example.png)
 ![code](https://raw.githubusercontent.com/RM926/gantt/refs/heads/master/src/images/code.png)
 
-## RUN
+## Feature
+
+- tree
+- drag
+- cell range (doing)
+
+## Run
 
 download package
 
@@ -15,7 +21,7 @@ run
 npm run dev
 ```
 
-## USE
+## Use
 
 ```javascript
 // html

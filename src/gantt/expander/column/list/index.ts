@@ -144,8 +144,9 @@ class ExpanderList {
     });
   }
 
-  update() {
-    this.updateInnerContainer();
+  update(payload?: { updateInner: boolean }) {
+    const { updateInner = true } = payload ?? {};
+    if (updateInner) this.updateInnerContainer();
     this.updateCellToContainer();
     this.removeCellInContainer();
   }

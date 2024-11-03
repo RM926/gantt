@@ -85,7 +85,7 @@ export const getTimeRangeTime = (payload: {
 }) => {
   const { dataSource, expandIds = [], result = [] } = payload;
   for (const d of dataSource) {
-    for (let t of d.timelines) {
+    for (let t of d.timelines ?? []) {
       const { startTime, endTime } = t;
       if (!result?.length) {
         result[0] = startTime;
@@ -216,7 +216,7 @@ export const getMergeTimelines = (payload: {
     return diskIdx;
   }
 
-  for (const t of timelines) {
+  for (const t of timelines ?? []) {
     const { startTime, endTime, id } = t;
     const cellBeginCount = (startTime - currentBeginTime) / cellGap;
     const cellFinishCount = (endTime - startTime) / cellGap + cellBeginCount;

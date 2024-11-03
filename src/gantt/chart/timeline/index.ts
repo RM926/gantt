@@ -89,7 +89,7 @@ class GanttTimeline {
 
   onContainerScroll = (e?: Event) => {
     this.containerRange = this.getContainerRange();
-    this.update();
+    this.update({ updateInner: false });
     this.scrollCallback?.(e);
   };
 
@@ -184,8 +184,9 @@ class GanttTimeline {
     renderLoop(this.gantt?.mergeTimelineSourceData ?? []);
   }
 
-  update() {
-    this.updateInnerContainer();
+  update(payload?: { updateInner?: boolean }) {
+    const { updateInner = true } = payload ?? {};
+    if (updateInner) this.updateInnerContainer();
     // 内层函数为一个CellGap更新一次，所以如果超出屏幕进行滚动,需要与屏幕滚动高度贴合的数据要在上层手动更新
     this.updateCellToContainer();
     this.removeCellInContainer();

@@ -70,7 +70,7 @@ class CalenderList {
 
   onContainerScroll = (e?: Event) => {
     this.containerRange = this.getContainerRange();
-    this.update();
+    this.update({updateInner: false});
     this.scrollCallback?.(e);
   };
 
@@ -95,8 +95,11 @@ class CalenderList {
     this.containerRange = this.getContainerRange();
   }
 
-  update() {
-    this.updateInnerContainer();
+  update(payload?:{
+    updateInner?: boolean
+  }) {
+    const { updateInner = true } = payload ?? {}
+    if(updateInner) this.updateInnerContainer();
     this.updateCellToContainer();
     this.removeCellInContainer();
   }
