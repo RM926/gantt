@@ -199,6 +199,7 @@ export class Gantt {
               dataSource: this.dataSource!,
               expandIds: this.expandIds,
             }),
+        cellGap: this.cellGap,
       })
     );
 

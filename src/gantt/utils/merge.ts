@@ -112,8 +112,9 @@ export const getTimeRangeTime = (payload: {
 
 export const getTimestampLineByTimeRange = (payload: {
   timeRange: (number | Date | string)[];
+  cellGap: number;
 }) => {
-  const { timeRange } = payload;
+  const { timeRange, cellGap } = payload;
   if (timeRange?.length < 2) return [];
 
   const [start, end] = timeRange;
@@ -122,7 +123,7 @@ export const getTimestampLineByTimeRange = (payload: {
   const result = [startTimestamp];
   let accumulate = startTimestamp;
   while (accumulate < endTimestamp) {
-    accumulate = accumulate + oneDayTimeStamp;
+    accumulate = accumulate + cellGap;
     if (accumulate <= endTimestamp) {
       result.push(accumulate);
     }

@@ -8,9 +8,10 @@ import {
   TTimelineListCell,
 } from "@/app/sub";
 import { useEffect, useRef } from "react";
-import { loopTree } from "@/gantt/utils";
+import { loopTree, oneDayTimeStamp } from "@/gantt/utils";
 import MouseMoveStepTest from "./sub/MouseMove";
 import { TimelineCellContent } from "@/gantt/chart/timeline/cell/content";
+import Scroll from "./sub/Scroll";
 
 const Page = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -23,9 +24,6 @@ const Page = () => {
         dataSource: data,
         expandIds: ["1"],
         timeRange: ["2024/9/29", "2026/10/1"],
-        styles: {
-          cell: { width: 50, height: 40 },
-        },
         enhance: {
           timeline: {
             // cell: TTimelineListCell,
@@ -45,6 +43,7 @@ const Page = () => {
   return (
     <div>
       {/* <MouseMoveStepTest /> */}
+      {/* <Scroll /> */}
       <div
         ref={containerRef}
         style={{
