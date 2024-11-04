@@ -25,7 +25,7 @@ class TimelineCellVisualContent {
     if (visualCell) this.visualCell = visualCell;
     this.create();
     this.initMousemove();
-    this.render(this);
+    // this.render(this);
   }
 
   create() {
@@ -33,11 +33,13 @@ class TimelineCellVisualContent {
     const styles = {
       position: "absolute",
       height: "100%",
+      width: "100%",
     };
-    console.log(this.visualCell?.element!,'eeee')
     appendClassName(this.element, [GanttTimelineCellVisualContentClassName]);
     updateElementStyles(this.element, styles);
-    appendChild(this.visualCell?.element!, this.element);
+    if (this.visualCell?.element) {
+      appendChild(this.visualCell?.element, this.element);
+    }
   }
 
   initMousemove() {
@@ -106,7 +108,6 @@ class TimelineCellVisualContent {
 
   update() {
     if (!this.visualCell?.timelineCell) return;
-    this.updateRender(this);
     const { height: cellHeight } =
       this.visualCell.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
     const bottomRange =
@@ -115,6 +116,7 @@ class TimelineCellVisualContent {
     this.mousemoveOffset?.mousemove?.updateConfig({
       range: [0, bottomRange],
     });
+    this.updateRender(this);
   }
 
   render(it: TimelineCellVisualContent) {}

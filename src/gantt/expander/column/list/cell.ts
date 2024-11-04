@@ -1,6 +1,7 @@
 import { MergeTimelineDataSource } from "../../../index.d";
 import ExpanderList from ".";
 import { GanttExpanderListCellClassName } from "../../../constant";
+import { updateElementStyles } from "@/gantt/utils";
 
 export type ExpanderListCellConfig = {
   mergeTimelineDataSource: MergeTimelineDataSource;
@@ -38,11 +39,9 @@ class ExpanderListCell {
       height: `${Math.max(mergeTimelines?.length, 1) * cellHeight}px`,
       top: `${top * cellHeight}px`,
     };
-
-    Object.entries(styles).forEach((entry) => {
-      const [key, value] = entry as unknown as [number, string];
-      this.cellElement!.style[key] = value;
-    });
+    if (this.cellElement) {
+      updateElementStyles(this.cellElement, styles);
+    }
   }
 
   update(payload?: { mergeTimelineDataSource?: MergeTimelineDataSource }) {
@@ -53,9 +52,20 @@ class ExpanderListCell {
     this.updateRender(this);
   }
 
-  updateRender(it: ExpanderListCell) {}
+  hiddenElement() {
+    if (!this?.cellElement) return;
+    const hiddenStyles = {
+      position: "fixed",
+      top: "-999999px",
+      width: "0px",
+      height: "0px",
+    };
+    updateElementStyles(this.cellElement, hiddenStyles);
+  }
 
-  render(it: ExpanderListCell) {
+  render(it: ExpanderListCell) {}
+
+  updateRender(it: ExpanderListCell) {
     const div = document.createElement("div");
     const { title, expandable, expand } = this.mergeTimelineDataSource!;
     div.innerHTML = `${title} ${expandable ? "open:" + expand : ""}`;

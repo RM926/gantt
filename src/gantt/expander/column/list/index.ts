@@ -6,7 +6,11 @@ import { Gantt } from "../../../../gantt/index";
 import ExpanderListCell from "./cell";
 import Column from "..";
 import { MergeTimelineDataSource } from "../../../index.d";
-import { appendClassName, createElement } from "../../../utils";
+import {
+  appendClassName,
+  createElement,
+  updateElementStyles,
+} from "../../../utils";
 import { GanttExpanderListInnerClassName } from "../../../constant";
 import ResizeObserverDom from "../../../utils/resize-observer-dom";
 
@@ -24,6 +28,7 @@ class ExpanderList {
   container?: ListConfig["container"];
   innerContainer?: HTMLElement;
 
+  cellReuses?: ExpanderListCell[] = [];
   listCellMap = new Map<string | number, ExpanderListCell>();
   updateCollectCellId?: (number | string)[];
   //  [t, b, l, r]
@@ -72,10 +77,7 @@ class ExpanderList {
       height: `${cellHeight * this.gantt!.getMergeTimelinesRowCount()}px`,
       boxSizing: "border-box",
     };
-    Object.entries(styles).forEach((entry) => {
-      const [key, value] = entry as unknown as [number, string];
-      this.innerContainer!.style[key] = value;
-    });
+    updateElementStyles(this.innerContainer, styles);
     this.containerRange = this.getContainerRange();
   }
 
@@ -87,15 +89,21 @@ class ExpanderList {
       oldExpanderCell.update({
         mergeTimelineDataSource,
       });
-      return;
+    } else {
+      let expanderCell = this.cellReuses?.shift();
+      if (expanderCell) {
+        expanderCell.update({ mergeTimelineDataSource });
+        this.listCellMap.set(id, expanderCell);
+      } else {
+        expanderCell = this.column?.createCell({
+          mergeTimelineDataSource,
+          expanderList: this,
+        });
+        this.listCellMap.set(id, expanderCell!);
+        this.innerContainer?.appendChild(expanderCell?.cellElement!);
+        expanderCell?.update();
+      }
     }
-    const expanderCell = this.column?.createCell({
-      mergeTimelineDataSource,
-      expanderList: this,
-    });
-    this.listCellMap.set(id, expanderCell);
-    this.innerContainer?.appendChild(expanderCell.cellElement!);
-    expanderCell.update();
   }
 
   updateCellToContainer() {
@@ -138,7 +146,8 @@ class ExpanderList {
         }) === ContainTypeEnum.NONE ||
         !this.updateCollectCellId?.includes(id)
       ) {
-        cell.remove();
+        cell?.hiddenElement();
+        this.cellReuses?.push(cell);
         this.listCellMap.delete(id);
       }
     });

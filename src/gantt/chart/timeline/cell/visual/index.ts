@@ -27,7 +27,6 @@ class TimelineCellVisual {
     const { timelineCell } = config;
     if (timelineCell) this.timelineCell = timelineCell;
     this.create();
-    this.render(this);
     this.createSub();
   }
 
@@ -39,21 +38,20 @@ class TimelineCellVisual {
     };
     appendClassName(this.element, [GanttTimelineCellVisualClassName]);
     updateElementStyles(this.element, styles);
-    console.log(this.timelineCell?.cellElement, "eeee");
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
   createSub() {
     const { leftRange, rightRange, visualContent } =
       this.timelineCell?.ganttTimeline?.gantt?.enhance?.timeline ?? {};
-    // const LeftRange = leftRange ?? TimelineCellLeftRange;
-    // this.leftRange = new (LeftRange as any)({
-    //   visualCell: this,
-    // });
-    // const RightRange = rightRange ?? TimelineCellRightRange;
-    // this.rightRange = new (RightRange as any)({
-    //   visualCell: this,
-    // });
+    const LeftRange = leftRange ?? TimelineCellLeftRange;
+    this.leftRange = new (LeftRange as any)({
+      visualCell: this,
+    });
+    const RightRange = rightRange ?? TimelineCellRightRange;
+    this.rightRange = new (RightRange as any)({
+      visualCell: this,
+    });
     const VisualContent = visualContent ?? TimelineCellVisualContent;
     this.content = new (VisualContent as any)({
       visualCell: this,
@@ -79,15 +77,14 @@ class TimelineCellVisual {
     // );
     // return;
     // todo 触发4次??
-    if (intersectRange) {
+    if (intersectRange && this.element) {
       const [LR, RR] = intersectRange;
       const styles = {
         left: `${offsetLeft >= 0 ? offsetLeft * cellWidth : 0}px`,
         width: `${Math.min(Math.abs(RR - LR), r - l) * cellWidth}px`,
       };
-      updateElementStyles(this.element!, styles);
+      updateElementStyles(this.element, styles);
     }
-    this.updateRender(this);
     this.updateSub();
   }
 
@@ -96,10 +93,6 @@ class TimelineCellVisual {
     this.rightRange?.update();
     this.content?.update();
   }
-
-  render(it: TimelineCellVisual) {}
-
-  updateRender(it: TimelineCellVisual) {}
 }
 
 export default TimelineCellVisual;

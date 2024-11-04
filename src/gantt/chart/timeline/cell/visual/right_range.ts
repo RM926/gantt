@@ -32,11 +32,13 @@ export class TimelineCellRightRange {
     };
     updateElementStyles(this.element, styles);
     appendClassName(this.element, [GanttTimelineCellRightRangeClassName]);
-    appendChild(this.visualCell?.element!, this.element);
+    if (this.visualCell?.element) {
+      appendChild(this.visualCell.element, this.element);
+    }
   }
 
   update() {
-    if (!this.visualCell) return;
+    if (!this.visualCell || !this.element) return;
     const { ganttTimeline, mergeTimeline } = this.visualCell?.timelineCell!;
     const { cellFinishCount } = mergeTimeline;
     const [, , , r] = ganttTimeline?.containerRange!;
@@ -47,7 +49,7 @@ export class TimelineCellRightRange {
       display: -offsetRight > 0 ? "block" : "none",
     };
 
-    updateElementStyles(this.element!, styles);
+    updateElementStyles(this.element, styles);
     this.updateRender(this);
   }
 

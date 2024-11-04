@@ -1,5 +1,6 @@
 import { MergeTimelineDataSource, TimestampLine } from "../../../index.d";
-import CalenderList from ".";
+import CalenderList from "./index";
+import { updateElementStyles } from "../../../utils";
 
 export type CalenderListCellConfig = {
   timestamp: TimestampLine;
@@ -54,6 +55,17 @@ class CalenderListCell {
     const div = document.createElement("div");
     div.innerHTML = this.timestamp?.value + "";
     this.cellElement?.append(div);
+  }
+
+  hiddenElement() {
+    if (!this?.cellElement) return;
+    const hiddenStyles = {
+      position: "fixed",
+      left: "-999999px",
+      width: "0px",
+      height: "0px",
+    };
+    updateElementStyles(this.cellElement, hiddenStyles);
   }
 
   remove() {

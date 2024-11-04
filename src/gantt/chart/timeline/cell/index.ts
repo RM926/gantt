@@ -2,7 +2,12 @@ import GanttTimeline from "../index";
 import { ReturnMergeTimeline } from "../../../utils/merge";
 import { GanttTimelineCellClassName } from "../../../constant";
 import { TimelineCellContent } from "./content";
-import { updateElementStyles } from "../../../utils/document";
+import {
+  appendChild,
+  appendClassName,
+  createElement,
+  updateElementStyles,
+} from "../../../utils/document";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
 import TimelineCellVisualContent from "./visual";
@@ -40,11 +45,32 @@ class TimelineCell {
   }
 
   createCell() {
-    this.cellElement = document.createElement("div");
-    this.cellElement.classList.add(GanttTimelineCellClassName);
+    this.cellElement = createElement("div");
+    appendClassName(this.cellElement, [GanttTimelineCellClassName]);
     this.updateCellElement();
-    this.ganttTimeline?.innerContainer?.appendChild(this.cellElement);
+    appendChild(this.ganttTimeline?.innerContainer!, this.cellElement);
     this.createSub();
+  }
+
+  createSub() {
+    const { cellContent, leftDrag, rightDrag } =
+      this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
+    const CellContent = cellContent ?? TimelineCellContent;
+    this.content = new (CellContent as any)({
+      timelineCell: this,
+    });
+    const LeftDrag = leftDrag ?? TimelineCellLeftDrag;
+    this.leftDrag = new (LeftDrag as any)({
+      timelineCell: this,
+    });
+    const RightDrag = rightDrag ?? TimelineCellRightDrag;
+    this.rightDrag = new (RightDrag as any)({
+      timelineCell: this,
+    });
+
+    this.visual = new TimelineCellVisual({
+      timelineCell: this,
+    });
   }
 
   updateCellElement() {
@@ -68,31 +94,9 @@ class TimelineCell {
 
     this.updateCellElement();
     this.updateSub(this);
-    this.updateRender(this);
   }
 
   updateDetect() {}
-
-  createSub() {
-    const { cellContent, leftDrag, rightDrag } =
-      this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
-    const CellContent = cellContent ?? TimelineCellContent;
-    this.content = new (CellContent as any)({
-      timelineCell: this,
-    });
-    const LeftDrag = leftDrag ?? TimelineCellLeftDrag;
-    this.leftDrag = new (LeftDrag as any)({
-      timelineCell: this,
-    });
-    const RightDrag = rightDrag ?? TimelineCellRightDrag;
-    this.rightDrag = new (RightDrag as any)({
-      timelineCell: this,
-    });
-
-    this.visual = new TimelineCellVisual({
-      timelineCell: this,
-    });
-  }
 
   updateSub(it: TimelineCell) {
     this.content?.update();
@@ -110,6 +114,8 @@ class TimelineCell {
     const hiddenStyles = {
       position: "fixed",
       left: "-999999px",
+      width: "0px",
+      height: "0px",
     };
     updateElementStyles(this.cellElement, hiddenStyles);
   }

@@ -6,6 +6,7 @@ import { Gantt } from "../../../../gantt/index";
 import CalenderListCell, { CalenderListCellConfig } from "./cell";
 import Calender from "..";
 import ResizeObserverDom from "../../../utils/resize-observer-dom";
+import { updateElementStyles } from "../../../utils";
 
 type ListConfig = {
   container: HTMLElement;
@@ -22,6 +23,7 @@ class CalenderList {
   innerContainer?: HTMLElement;
   calender?: ListConfig["calender"];
 
+  cellReuses?: CalenderListCell[] = [];
   listCellMap = new Map<number | string, CalenderListCell>();
   updateCollectCellId?: (number | string)[];
 
@@ -55,7 +57,8 @@ class CalenderList {
         }) === ContainTypeEnum.NONE ||
         !this.updateCollectCellId?.includes(id)
       ) {
-        cell.remove();
+        cell?.hiddenElement();
+        this.cellReuses?.push(cell);
         this.listCellMap.delete(id);
       }
     });
@@ -70,7 +73,7 @@ class CalenderList {
 
   onContainerScroll = (e?: Event) => {
     this.containerRange = this.getContainerRange();
-    this.update({updateInner: false});
+    this.update({ updateInner: false });
     this.scrollCallback?.(e);
   };
 
@@ -88,18 +91,13 @@ class CalenderList {
       width: `${cellWidth * this.gantt!.timestampLine?.length || 0}px`,
       boxSizing: "border-box",
     };
-    Object.entries(styles).forEach((entry) => {
-      const [key, value] = entry as unknown as [number, string];
-      this.innerContainer!.style[key] = value;
-    });
+    updateElementStyles(this.innerContainer, styles);
     this.containerRange = this.getContainerRange();
   }
 
-  update(payload?:{
-    updateInner?: boolean
-  }) {
-    const { updateInner = true } = payload ?? {}
-    if(updateInner) this.updateInnerContainer();
+  update(payload?: { updateInner?: boolean }) {
+    const { updateInner = true } = payload ?? {};
+    if (updateInner) this.updateInnerContainer();
     this.updateCellToContainer();
     this.removeCellInContainer();
   }
@@ -124,14 +122,21 @@ class CalenderList {
               timestamp: this.gantt?.timestampLine[i],
             });
             continue;
+          } else {
+            let calenderCell = this.cellReuses?.shift();
+            if (calenderCell) {
+              calenderCell.update({ timestamp: this.gantt?.timestampLine[i] });
+              this.listCellMap.set(id, calenderCell);
+            } else {
+              calenderCell = this.calender?.createCell({
+                timestamp: this.gantt?.timestampLine[i],
+                calenderList: this,
+              })!;
+              this.listCellMap.set(id, calenderCell);
+              this.innerContainer?.appendChild(calenderCell.cellElement!);
+              calenderCell.update();
+            }
           }
-          const calenderCell = this.calender?.createCell({
-            timestamp: this.gantt?.timestampLine[i],
-            calenderList: this,
-          })!;
-          this.listCellMap.set(id, calenderCell);
-          this.innerContainer?.appendChild(calenderCell.cellElement!);
-          calenderCell.update();
         }
         if (i >= r) return;
       }

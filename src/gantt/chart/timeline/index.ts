@@ -90,11 +90,11 @@ class GanttTimeline {
     this.containerRange = this.getContainerRange();
   }
 
-  onContainerScroll = throttle((e?: Event) => {
+  onContainerScroll = (e?: Event) => {
     this.containerRange = this.getContainerRange();
     this.update({ updateInner: false });
     this.scrollCallback?.(e);
-  }, 10);
+  };
 
   registerEvent() {
     this.container?.addEventListener("scroll", this.onContainerScroll);

@@ -8,7 +8,7 @@ import {
 } from "@/gantt/chart/timeline/cell/content";
 import TimelineCellVisualContent, {
   TimelineCellVisualContentConfig,
-} from "@/gantt/chart/timeline/cell/visual";
+} from "@/gantt/chart/timeline/cell/visual/content";
 import ExpanderHeader, {
   ExpanderHeaderConfig,
 } from "@/gantt/expander/column/header";
@@ -172,7 +172,9 @@ export class TCalenderListCell extends CalenderListCell {
     super(config);
   }
 
-  render(it: CalenderListCell) {
+  render() {}
+
+  updateRender(it: CalenderListCell): void {
     if (!this.root) this.root = createRoot(it.cellElement!);
     const time = new Date(it.timestamp?.value!).getDate();
     this.root.render(<CalenderListCellRender time={time} />);
@@ -222,7 +224,7 @@ export class TTimelineCellVisualContent extends TimelineCellVisualContent {
   // 创建新的内容
   updateRender(it: TimelineCellVisualContent) {
     if (!this.root) this.root = createRoot(it.element!);
-    const mergeTimeline = it.timelineCell?.mergeTimeline! ?? {};
+    const mergeTimeline = it.visualCell?.timelineCell?.mergeTimeline! ?? {};
     this.root.render(<TimelineCellRender mergeTimeline={mergeTimeline} />);
   }
 }
