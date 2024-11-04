@@ -30,7 +30,7 @@ const Page = () => {
             // todo TS类型
             // cell: TTimelineListCell,
             // cellContent: TTimelineCellContent as any,
-            // visualContent: TTimelineCellVisualContent as any,
+            visualContent: TTimelineCellVisualContent as any,
           },
           expanderLabel: {
             cell: TExpanderListCell as any,

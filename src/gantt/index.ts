@@ -29,9 +29,9 @@ import { TimelineCellContent } from "./chart/timeline/cell/content";
 import { getMergeTimelinesSourceData } from "./utils/tree";
 import TimelineCellLeftDrag from "./chart/timeline/cell/left_drag";
 import TimelineCellRightDrag from "./chart/timeline/cell/right_drag";
-import TimelineCellVisualContent from "./chart/timeline/cell/visual_content";
-import { TimelineCellLeftRange } from "./chart/timeline/cell/visual_content/left_range";
-import { TimelineCellRightRange } from "./chart/timeline/cell/visual_content/right_range";
+import TimelineCellVisualContent from "./chart/timeline/cell/visual";
+import { TimelineCellLeftRange } from "./chart/timeline/cell/visual/left_range";
+import { TimelineCellRightRange } from "./chart/timeline/cell/visual/right_range";
 
 export enum ScrollControlSource {
   EXPANDER,

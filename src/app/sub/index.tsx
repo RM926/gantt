@@ -8,7 +8,7 @@ import {
 } from "@/gantt/chart/timeline/cell/content";
 import TimelineCellVisualContent, {
   TimelineCellVisualContentConfig,
-} from "@/gantt/chart/timeline/cell/visual_content";
+} from "@/gantt/chart/timeline/cell/visual";
 import ExpanderHeader, {
   ExpanderHeaderConfig,
 } from "@/gantt/expander/column/header";

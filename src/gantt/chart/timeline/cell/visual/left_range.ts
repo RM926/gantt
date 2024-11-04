@@ -6,18 +6,18 @@ import {
   createElement,
   updateElementStyles,
 } from "../../../../utils";
-import TimelineCellVisualContent from ".";
+import TimelineCellVisual from "./index";
 
 export type TimelineCellLeftRangeConfig = {
-  visualContent?: TimelineCellVisualContent;
+  visualCell?: TimelineCellVisual;
 };
 
 export class TimelineCellLeftRange {
   element?: HTMLElement;
-  visualContent?: TimelineCellLeftRangeConfig["visualContent"];
+  visualCell?: TimelineCellLeftRangeConfig["visualCell"];
   constructor(config: TimelineCellLeftRangeConfig) {
-    const { visualContent } = config;
-    if (visualContent) this.visualContent = visualContent;
+    const { visualCell } = config;
+    if (visualCell) this.visualCell = visualCell;
     this.create();
   }
 
@@ -32,12 +32,12 @@ export class TimelineCellLeftRange {
     };
     updateElementStyles(this.element, styles);
     appendClassName(this.element, [GanttTimelineCellLeftRangeClassName]);
-    appendChild(this.visualContent?.element!, this.element);
+    appendChild(this.visualCell?.element!, this.element);
   }
 
   update() {
-    if (!this.visualContent) return;
-    const { mergeTimeline, ganttTimeline } = this.visualContent?.timelineCell!;
+    if (!this.visualCell) return;
+    const { mergeTimeline, ganttTimeline } = this.visualCell?.timelineCell!;
     const { cellBeginCount } = mergeTimeline;
     const [, , l] = ganttTimeline?.containerRange!;
 

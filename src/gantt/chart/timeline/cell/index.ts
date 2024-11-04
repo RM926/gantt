@@ -5,7 +5,8 @@ import { TimelineCellContent } from "./content";
 import { updateElementStyles } from "../../../utils/document";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
-import TimelineCellVisualContent from "./visual_content";
+import TimelineCellVisualContent from "./visual";
+import TimelineCellVisual from "./visual";
 
 export type TimelineCellConfig = {
   mergeTimeline: ReturnMergeTimeline;
@@ -28,8 +29,7 @@ class TimelineCell {
   content?: TimelineCellContent;
   leftDrag?: TimelineCellLeftDrag;
   rightDrag?: TimelineCellRightDrag;
-
-  visualContent?: TimelineCellVisualContent;
+  visual?: TimelineCellVisual;
 
   constructor(config: TimelineCellConfig) {
     const { mergeTimeline, ganttTimeline } = config;
@@ -43,9 +43,8 @@ class TimelineCell {
     this.cellElement = document.createElement("div");
     this.cellElement.classList.add(GanttTimelineCellClassName);
     this.updateCellElement();
-    this.createSub();
-
     this.ganttTimeline?.innerContainer?.appendChild(this.cellElement);
+    this.createSub();
   }
 
   updateCellElement() {
@@ -75,12 +74,8 @@ class TimelineCell {
   updateDetect() {}
 
   createSub() {
-    const {
-      cellContent,
-      visualContent,
-      leftDrag,
-      rightDrag,
-    } = this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
+    const { cellContent, leftDrag, rightDrag } =
+      this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
     const CellContent = cellContent ?? TimelineCellContent;
     this.content = new (CellContent as any)({
       timelineCell: this,
@@ -93,8 +88,8 @@ class TimelineCell {
     this.rightDrag = new (RightDrag as any)({
       timelineCell: this,
     });
-    const VisualContent = visualContent ?? TimelineCellVisualContent;
-    this.visualContent = new (VisualContent as any)({
+
+    this.visual = new TimelineCellVisual({
       timelineCell: this,
     });
   }
@@ -103,7 +98,7 @@ class TimelineCell {
     this.content?.update();
     this.leftDrag?.update();
     this.rightDrag?.update();
-    this.visualContent?.update();
+    this.visual?.update();
   }
 
   render(it: TimelineCell) {}

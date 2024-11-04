@@ -7,17 +7,18 @@ import {
   updateElementStyles,
 } from "../../../../utils";
 import TimelineCellVisualContent from "./index";
+import TimelineCellVisual from "./index";
 
 export type TimelineCellRightRangeConfig = {
-  visualContent?: TimelineCellVisualContent;
+  visualCell?: TimelineCellVisual;
 };
 
 export class TimelineCellRightRange {
   element?: HTMLElement;
-  visualContent?: TimelineCellRightRangeConfig["visualContent"];
+  visualCell?: TimelineCellRightRangeConfig["visualCell"];
   constructor(config: TimelineCellRightRangeConfig) {
-    const { visualContent } = config;
-    if (visualContent) this.visualContent = visualContent;
+    const { visualCell } = config;
+    if (visualCell) this.visualCell = visualCell;
     this.create();
   }
 
@@ -31,12 +32,12 @@ export class TimelineCellRightRange {
     };
     updateElementStyles(this.element, styles);
     appendClassName(this.element, [GanttTimelineCellRightRangeClassName]);
-    appendChild(this.visualContent?.element!, this.element);
+    appendChild(this.visualCell?.element!, this.element);
   }
 
   update() {
-    if (!this.visualContent) return;
-    const { ganttTimeline, mergeTimeline } = this.visualContent?.timelineCell!;
+    if (!this.visualCell) return;
+    const { ganttTimeline, mergeTimeline } = this.visualCell?.timelineCell!;
     const { cellFinishCount } = mergeTimeline;
     const [, , , r] = ganttTimeline?.containerRange!;
 

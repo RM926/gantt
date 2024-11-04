@@ -7,8 +7,6 @@ import {
 } from "../../../../utils";
 import TimelineCell from "../index";
 import { GanttTimelineCellVisualClassName } from "../../../../constant";
-import MousemoveOffset from "../../../../utils/mousemove_offset";
-import { MouseStatus } from "../../../../utils/mousemove";
 import { TimelineCellLeftRange } from "./left_range";
 import { TimelineCellRightRange } from "./right_range";
 import TimelineCellVisualContent from "./content";
@@ -20,7 +18,6 @@ export type TimelineCellVisualConfig = {
 class TimelineCellVisual {
   timelineCell?: TimelineCellVisualConfig["timelineCell"];
   element?: HTMLElement;
-  mousemoveOffset?: MousemoveOffset;
 
   leftRange?: TimelineCellLeftRange;
   rightRange?: TimelineCellRightRange;
@@ -30,8 +27,8 @@ class TimelineCellVisual {
     const { timelineCell } = config;
     if (timelineCell) this.timelineCell = timelineCell;
     this.create();
-    this.createSub();
     this.render(this);
+    this.createSub();
   }
 
   create() {
@@ -42,30 +39,25 @@ class TimelineCellVisual {
     };
     appendClassName(this.element, [GanttTimelineCellVisualClassName]);
     updateElementStyles(this.element, styles);
+    console.log(this.timelineCell?.cellElement, "eeee");
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
   createSub() {
     const { leftRange, rightRange, visualContent } =
       this.timelineCell?.ganttTimeline?.gantt?.enhance?.timeline ?? {};
-    const LeftRange = leftRange ?? TimelineCellLeftRange;
-    this.leftRange = new (LeftRange as any)({
-      visualContent: this,
+    // const LeftRange = leftRange ?? TimelineCellLeftRange;
+    // this.leftRange = new (LeftRange as any)({
+    //   visualCell: this,
+    // });
+    // const RightRange = rightRange ?? TimelineCellRightRange;
+    // this.rightRange = new (RightRange as any)({
+    //   visualCell: this,
+    // });
+    const VisualContent = visualContent ?? TimelineCellVisualContent;
+    this.content = new (VisualContent as any)({
+      visualCell: this,
     });
-    const RightRange = rightRange ?? TimelineCellRightRange;
-    this.rightRange = new (RightRange as any)({
-      visualContent: this,
-    });
-    const VisualContent = visualContent ?? TimelineCellRightRange;
-    this.rightRange = new (VisualContent as any)({
-      visualContent: this,
-    });
-  }
-
-  updateSub() {
-    this.leftRange?.update();
-    this.rightRange?.update();
-    this.content?.update();
   }
 
   update() {
@@ -97,6 +89,12 @@ class TimelineCellVisual {
     }
     this.updateRender(this);
     this.updateSub();
+  }
+
+  updateSub() {
+    this.leftRange?.update();
+    this.rightRange?.update();
+    this.content?.update();
   }
 
   render(it: TimelineCellVisual) {}
