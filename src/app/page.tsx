@@ -5,6 +5,7 @@ import {
   TCalenderListCell,
   TExpanderListCell,
   TTimelineCellContent,
+  TTimelineCellVisualContent,
   TTimelineListCell,
 } from "@/app/sub";
 import { useEffect, useRef } from "react";
@@ -26,9 +27,10 @@ const Page = () => {
         timeRange: ["2024/9/29", "2026/10/1"],
         enhance: {
           timeline: {
-            // cell: TTimelineListCell,
             // todo TS类型
-            cellContent: TTimelineCellContent as any,
+            // cell: TTimelineListCell,
+            // cellContent: TTimelineCellContent as any,
+            visualContent: TTimelineCellVisualContent as any,
           },
           expanderLabel: {
             cell: TExpanderListCell as any,

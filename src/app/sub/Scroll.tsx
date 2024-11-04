@@ -3,6 +3,7 @@ var ticking = false; // rAF 触发锁
 
 function Scroll() {
   function onScroll() {
+    console.log("tt");
     if (!ticking) {
       requestAnimationFrame(realFunc);
       ticking = true;
@@ -14,6 +15,9 @@ function Scroll() {
     const bars = document.querySelectorAll(".scroll_bar");
     const { scrollLeft } = document.querySelector(".scroll_container")!;
     // console.log(bar, scrollLeft);
+    for (let i = 0; i <= 2000; i++) {
+      console.log('1');
+    }
     Array.from(bars).forEach((bar) => {
       (bar as HTMLElement).style.left = `${scrollLeft}px`;
     });
@@ -31,8 +35,11 @@ function Scroll() {
       }}
       className="scroll_container"
       onScroll={onScroll}
+      onWheel={(e) => {
+        console.log("onwheel", e.deltaY);
+      }}
     >
-      <div style={{ border: "1px solid blue", width: 20000, height: 300 }}>
+      <div style={{ border: "1px solid blue", width: 20000, height: 20000 }}>
         {new Array(30).fill(0).map((it, key) => {
           return (
             <div

@@ -68,12 +68,14 @@
 .gantt_timeline_cell_right_range {
   width: 30px;
   height: 100%;
+  z-index: 1;
 }
 
 .gantt_timeline_cell_left_drag,
 .gantt_timeline_cell_right_drag {
   width: 20px;
   height: 100%;
+  z-index: 2;
   cursor: pointer;
 }
 

@@ -3,8 +3,6 @@ import { ReturnMergeTimeline } from "../../../utils/merge";
 import { GanttTimelineCellClassName } from "../../../constant";
 import { TimelineCellContent } from "./content";
 import { updateElementStyles } from "../../../utils/document";
-import { TimelineCellLeftRange } from "./left_range";
-import { TimelineCellRightRange } from "./right_range";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
 import TimelineCellVisualContent from "./visual_content";
@@ -28,8 +26,6 @@ class TimelineCell {
   ganttTimeline?: TimelineCellConfig["ganttTimeline"];
 
   content?: TimelineCellContent;
-  leftRange?: TimelineCellLeftRange;
-  rightRange?: TimelineCellRightRange;
   leftDrag?: TimelineCellLeftDrag;
   rightDrag?: TimelineCellRightDrag;
 
@@ -79,18 +75,14 @@ class TimelineCell {
   updateDetect() {}
 
   createSub() {
-    const { cellContent, leftRange, rightRange, leftDrag, rightDrag } =
-      this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
+    const {
+      cellContent,
+      visualContent,
+      leftDrag,
+      rightDrag,
+    } = this.ganttTimeline?.gantt?.enhance?.timeline ?? {};
     const CellContent = cellContent ?? TimelineCellContent;
     this.content = new (CellContent as any)({
-      timelineCell: this,
-    });
-    const LeftRange = leftRange ?? TimelineCellLeftRange;
-    this.leftRange = new (LeftRange as any)({
-      timelineCell: this,
-    });
-    const RightRange = rightRange ?? TimelineCellRightRange;
-    this.rightRange = new (RightRange as any)({
       timelineCell: this,
     });
     const LeftDrag = leftDrag ?? TimelineCellLeftDrag;
@@ -101,17 +93,14 @@ class TimelineCell {
     this.rightDrag = new (RightDrag as any)({
       timelineCell: this,
     });
-
-    const VisualContent = TimelineCellVisualContent;
-    this.visualContent = new VisualContent({
+    const VisualContent = visualContent ?? TimelineCellVisualContent;
+    this.visualContent = new (VisualContent as any)({
       timelineCell: this,
     });
   }
 
   updateSub(it: TimelineCell) {
     this.content?.update();
-    this.leftRange?.update();
-    this.rightRange?.update();
     this.leftDrag?.update();
     this.rightDrag?.update();
     this.visualContent?.update();
@@ -120,6 +109,15 @@ class TimelineCell {
   render(it: TimelineCell) {}
 
   updateRender(it: TimelineCell) {}
+
+  hiddenElement() {
+    if (!this?.cellElement) return;
+    const hiddenStyles = {
+      position: "fixed",
+      left: "-999999px",
+    };
+    updateElementStyles(this.cellElement, hiddenStyles);
+  }
 
   remove() {
     this.cellElement?.remove();

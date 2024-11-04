@@ -7,6 +7,7 @@ import TimelineCell, { TimelineCellConfig } from "./cell";
 import { GanttTimelineInnerClassName } from "../../constant";
 import ScrollOverflow from "../../utils/scroll_overflow";
 import ResizeObserverDom from "../../utils/resize-observer-dom";
+import { throttle } from "lodash";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;
@@ -26,6 +27,8 @@ class GanttTimeline {
   gantt?: Gantt;
   scrollOverflow?: ScrollOverflow;
   enhance?: GanttTimelineConfig["enhance"];
+
+  cellReuses?: TimelineCell[] = [];
 
   timelineCellMap = new Map<string, TimelineCell>();
   /** 收集本次检测更新的id,方便清除timelineCellMap的缓存数据 */
@@ -87,11 +90,11 @@ class GanttTimeline {
     this.containerRange = this.getContainerRange();
   }
 
-  onContainerScroll = (e?: Event) => {
+  onContainerScroll = throttle((e?: Event) => {
     this.containerRange = this.getContainerRange();
     this.update({ updateInner: false });
     this.scrollCallback?.(e);
-  };
+  }, 10);
 
   registerEvent() {
     this.container?.addEventListener("scroll", this.onContainerScroll);
@@ -127,7 +130,8 @@ class GanttTimeline {
         !cell.leftDragging &&
         !cell.rightDragging
       ) {
-        cell.cellElement?.remove();
+        cell?.hiddenElement();
+        this.cellReuses?.push(cell);
         this.timelineCellMap.delete(cell.mergeTimeline.id);
       } else {
         cell.updateSub(cell);
@@ -147,12 +151,18 @@ class GanttTimeline {
         oldCell.updateSub(oldCell);
       }
     } else {
-      const cell = this.createCell({
-        mergeTimeline,
-        ganttTimeline: this,
-      });
-      this.timelineCellMap.set(id, cell);
-      cell.update();
+      let cell = this.cellReuses?.shift();
+      if (cell) {
+        cell.update({ mergeTimeline });
+        this.timelineCellMap.set(id, cell);
+      } else {
+        cell = this.createCell({
+          mergeTimeline,
+          ganttTimeline: this,
+        });
+        this.timelineCellMap.set(id, cell);
+        cell.update();
+      }
     }
   }
 

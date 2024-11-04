@@ -21,8 +21,8 @@
   border: 1px solid rgb(239, 195, 138);
 }
 
-.gantt_timeline_cell_visual_content {
-  background: yellowgreen;
+.gantt_timeline_cell_visual_content{
+  border: 2px solid salmon;
 }
 
 .gantt_timeline_cell_left_range,
@@ -35,3 +35,4 @@
 .gantt_timeline_cell_right_drag {
   background: rgb(159, 202, 243)
 }
+

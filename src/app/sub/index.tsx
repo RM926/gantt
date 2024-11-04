@@ -6,6 +6,9 @@ import {
   TimelineCellContent,
   TimelineCellContentConfig,
 } from "@/gantt/chart/timeline/cell/content";
+import TimelineCellVisualContent, {
+  TimelineCellVisualContentConfig,
+} from "@/gantt/chart/timeline/cell/visual_content";
 import ExpanderHeader, {
   ExpanderHeaderConfig,
 } from "@/gantt/expander/column/header";
@@ -202,6 +205,22 @@ export class TTimelineCellContent extends TimelineCellContent {
 
   // 创建新的内容
   updateRender(it: TimelineCellContent) {
+    if (!this.root) this.root = createRoot(it.element!);
+    const mergeTimeline = it.timelineCell?.mergeTimeline! ?? {};
+    this.root.render(<TimelineCellRender mergeTimeline={mergeTimeline} />);
+  }
+}
+export class TTimelineCellVisualContent extends TimelineCellVisualContent {
+  root?: any;
+  constructor(config: TimelineCellVisualContentConfig) {
+    super(config);
+  }
+
+  // 首次渲染的内容
+  render(it: TimelineCellVisualContent) {}
+
+  // 创建新的内容
+  updateRender(it: TimelineCellVisualContent) {
     if (!this.root) this.root = createRoot(it.element!);
     const mergeTimeline = it.timelineCell?.mergeTimeline! ?? {};
     this.root.render(<TimelineCellRender mergeTimeline={mergeTimeline} />);
