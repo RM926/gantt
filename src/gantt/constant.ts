@@ -22,6 +22,8 @@ export const GanttTimelineInnerClassName = "gantt_timeline_inner";
 export const GanttTimelineCellClassName = "gantt_timeline_cell";
 export const GanttTimelineCellContentClassName = "gantt_timeline_cell_content";
 
+export const GanttTimelineCellVisualClassName = "gantt_timeline_cell_visual";
+
 export const GanttTimelineCellVisualContentClassName =
   "gantt_timeline_cell_visual_content";
 
