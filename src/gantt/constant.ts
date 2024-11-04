@@ -41,7 +41,7 @@ export const GanttTimelineCellRightDragClassName =
 export const BasicStyles = {
   cell: {
     height: 40,
-    width: 50,
+    width: 100,
   },
   header: {
     height: 50,

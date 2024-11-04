@@ -2,6 +2,7 @@
   width: 100%;
   max-height: 400px;
   display: flex;
+  font-size: 12px;
 }
 
 .gantt_expander {

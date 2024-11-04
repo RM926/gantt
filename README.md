@@ -5,7 +5,7 @@
 
 - tree
 - drag
-- cell range (doing)
+- cell range
 
 ## Run
 
