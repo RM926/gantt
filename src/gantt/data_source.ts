@@ -16,7 +16,7 @@ const data: GanttSourceData[] = [
         id: "timeline_0_1",
         title: "timeline_0_1",
         startTime: getStartTime(new Date("2024/10/2")),
-        endTime: getStartTime(new Date("2024/10/7")),
+        endTime: getStartTime(new Date("2024/10/7")) + 20000,
       },
     ],
     children: [
@@ -84,39 +84,39 @@ const data: GanttSourceData[] = [
       },
     ],
   },
-  ...new Array(2000).fill(0).map((d, i) => {
-    const ii = i % 20;
-    return {
-      id: `arr_${i + 4}`,
-      title: `arr_title${i + 3}`,
-      timelines: [
-        {
-          title: "title",
-          startTime: getStartTime(
-            new Date("2024/9/29").getTime() + ii * oneDayTimeStamp
-            // new Date("2024/9/29")
-          ),
-          endTime: getEndTime(
-            new Date("2024/9/29").getTime() + (ii + 10) * oneDayTimeStamp
-            // new Date("2025/10/29")
-          ),
-          id: `timelines_${i}`,
-        },
-      ],
-    };
-  }),
-  {
-    id: "last",
-    title: "last",
-    timelines: [
-      {
-        title: "last_timeline_1_4_0",
-        startTime: getStartTime(new Date("2024/9/30")),
-        endTime: getEndTime(new Date("2025/10/1")),
-        id: "last_timeline_1_4_0",
-      },
-    ],
-  },
+  // ...new Array(2000).fill(0).map((d, i) => {
+  //   const ii = i % 20;
+  //   return {
+  //     id: `arr_${i + 4}`,
+  //     title: `arr_title${i + 3}`,
+  //     timelines: [
+  //       {
+  //         title: "title",
+  //         startTime: getStartTime(
+  //           new Date("2024/9/29").getTime() + ii * oneDayTimeStamp
+  //           // new Date("2024/9/29")
+  //         ),
+  //         endTime: getEndTime(
+  //           new Date("2024/9/29").getTime() + (ii + 10) * oneDayTimeStamp
+  //           // new Date("2025/10/29")
+  //         ),
+  //         id: `timelines_${i}`,
+  //       },
+  //     ],
+  //   };
+  // }),
+  // {
+  //   id: "last",
+  //   title: "last",
+  //   timelines: [
+  //     {
+  //       title: "last_timeline_1_4_0",
+  //       startTime: getStartTime(new Date("2024/9/30")),
+  //       endTime: getEndTime(new Date("2025/10/1")),
+  //       id: "last_timeline_1_4_0",
+  //     },
+  //   ],
+  // },
 ];
 
 export { data };

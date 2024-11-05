@@ -3,7 +3,11 @@ import {
   GanttSourceDataTimeline,
   MergeTimelineDataSource,
 } from "../index.d";
-import { ContainTypeEnum, judgeContainType } from "./contain";
+import {
+  ContainTypeEnum,
+  getIntersectRange,
+  judgeContainType,
+} from "./contain";
 import { getStartTime, oneDayTimeStamp } from "./date";
 import { getTreePathTarget } from "./tree";
 
@@ -167,52 +171,30 @@ export const getMergeTimelines = (payload: {
 
   const mergeTimelinesArray: ReturnMergeTimeline[][] = [];
 
-  const diskArrayCount =
-    (timestampLine.slice(-1)[0] - currentBeginTime) / cellGap + 1;
-
-  const diskArray = !!diskArrayCount ? [new Array(diskArrayCount).fill(0)] : [];
+  const currentDiskIdx = 0;
 
   /** 找到单个数据位于的行数 */
   function findFillDiskArrayIndex(params: {
-    diskArray: (number | string)[][];
+    mergeTimelinesArray: ReturnMergeTimeline[][];
     begin: number;
     finish: number;
-    fillId: number | string;
-    cellGap: number;
   }): number {
-    const { diskArray: _diskArray, begin, finish, fillId } = params;
+    const { mergeTimelinesArray: mergeTimelinesArray, begin, finish } = params;
 
-    let isOverlap = false;
     let diskIdx = -1;
-    const emptyDiskArray: (number | string)[] = new Array(
-      _diskArray[0].length
-    ).fill(0);
-    let isEmptyDiskArrayIsFill = false;
-    for (let i = 0; i < _diskArray.length; i++) {
-      const currentDiskArray = JSON.parse(JSON.stringify(_diskArray[i]));
-      isOverlap = false;
-      for (let j = begin; j < finish; j++) {
-        if (!isEmptyDiskArrayIsFill) {
-          emptyDiskArray[j] = fillId;
-        }
-
-        if (currentDiskArray[j]) {
-          isOverlap = true;
-        }
-        currentDiskArray[j] = fillId;
+    for (let row in mergeTimelinesArray) {
+      const mergeTimelines = mergeTimelinesArray[row];
+      const canFill = mergeTimelines.every((m) => {
+        const { cellBeginCount, cellFinishCount } = m;
+        return !getIntersectRange(
+          [begin, finish],
+          [cellBeginCount, cellFinishCount]
+        );
+      });
+      if (canFill) {
+        diskIdx = +row;
+        return diskIdx;
       }
-
-      isEmptyDiskArrayIsFill = true;
-
-      if (!isOverlap) {
-        diskIdx = i;
-        _diskArray[diskIdx] = currentDiskArray;
-        break;
-      }
-    }
-
-    if (diskIdx === -1) {
-      _diskArray.push(emptyDiskArray);
     }
     return diskIdx;
   }
@@ -222,15 +204,13 @@ export const getMergeTimelines = (payload: {
     const cellBeginCount = (startTime - currentBeginTime) / cellGap;
     const cellFinishCount = (endTime - startTime) / cellGap + cellBeginCount;
     const idx = findFillDiskArrayIndex({
-      diskArray,
+      mergeTimelinesArray,
       begin: cellBeginCount,
       finish: cellFinishCount,
-      fillId: id,
-      cellGap,
     });
 
     const topIdx =
-      (idx === -1 ? diskArray.length - 1 : idx) + verticalCurrentRowIdx;
+      (idx === -1 ? mergeTimelinesArray?.length : idx) + verticalCurrentRowIdx;
     const newRow = {
       ...t,
       cellBeginCount,

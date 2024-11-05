@@ -214,11 +214,11 @@ export class Gantt {
       });
     }
 
-    // console.log(
-    //   this.dataSource,
-    //   this.mergeTimelineSourceData,
-    //   "mergeTimelinesSourceData"
-    // );
+    console.log(
+      this.dataSource,
+      this.mergeTimelineSourceData,
+      "mergeTimelinesSourceData"
+    );
   }
 
   scrollControl(payload: {
