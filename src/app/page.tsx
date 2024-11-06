@@ -24,7 +24,7 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        // timeRange: ["2024/9/29", "2024/12/20"],
+        timeRange: ["2024/9/29", "2024/12/20"],
         enhance: {
           timeline: {
             // todo TS类型
@@ -44,7 +44,7 @@ const Page = () => {
   }, []);
   return (
     <div>
-      {/* <MouseMoveStepTest /> */}
+      {/* <MouseMoveStepTest />  */}
       {/* <Scroll /> */}
       <div
         ref={containerRef}

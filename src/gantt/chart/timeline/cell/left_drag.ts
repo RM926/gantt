@@ -24,7 +24,7 @@ class TimelineCellLeftDrag {
     this.initMousemoveOffset();
   }
 
-  create() {
+  private create() {
     this.element = createElement("div");
     const styles = {
       position: "absolute",
@@ -38,19 +38,16 @@ class TimelineCellLeftDrag {
     appendChild(this.timelineCell?.cellElement!, this.element);
   }
 
-  initMousemoveOffset() {
-    const { width: cellWidth } =
-      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
-    const rightRange =
-      (this.timelineCell?.mergeTimeline?.cellFinishCount ?? 0) * cellWidth;
+  private initMousemoveOffset() {
+    const { height: cellHeight, width: cellWidth } =
+      this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
     const _that = this;
     this.mousemoveOffset = new MousemoveOffset({
       target: _that.element,
       container: _that.timelineCell?.ganttTimeline?.container,
       girdContainer: _that.timelineCell?.ganttTimeline?.innerContainer,
-      moveStep: [cellWidth],
-      offsetRange: true,
-      range: [, , , rightRange],
+      moveStep: _that.getMousemoveStep(_that),
+      range: _that.getMousemoveRange(),
       mouseStatusChange(status) {
         const moving =
           status === MouseStatus.DOWN || status === MouseStatus.MOVE;
@@ -73,10 +70,16 @@ class TimelineCellLeftDrag {
           const { startTime, cellBeginCount } =
             _that.timelineCell.mergeTimeline;
           const cellGap = _that.timelineCell.ganttTimeline?.gantt?.cellGap!;
+
+          // moveStepX
+          const [moveStepX] = _that.getMousemoveStep(_that);
+          const timeStep = (cellGap / cellWidth) * moveStepX;
+          const cellCountStep = (changeStep / cellWidth) * moveStepX;
+
           const newTimeline = {
             ..._that.timelineCell.mergeTimeline,
-            startTime: startTime + changeStep * cellGap,
-            cellBeginCount: cellBeginCount + changeStep,
+            startTime: startTime + changeStep * timeStep,
+            cellBeginCount: cellBeginCount + cellCountStep,
           };
 
           _that.timelineCell.update({
@@ -87,24 +90,35 @@ class TimelineCellLeftDrag {
     });
   }
 
+  getMousemoveRange() {
+    if (!this?.timelineCell) return;
+    const { width: cellWidth } =
+      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const rightRange =
+      ((this.timelineCell?.mergeTimeline?.cellFinishCount ?? 0) - 1) *
+      cellWidth;
+    return [, , , rightRange];
+  }
+
+  getMousemoveStep(it: TimelineCellLeftDrag) {
+    const { width: cellWidth } =
+      this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    return [cellWidth];
+  }
+
   update() {
     if (!this.timelineCell) return;
     const { mergeTimeline, ganttTimeline } = this.timelineCell;
     const { cellBeginCount, cellFinishCount } = mergeTimeline;
     const [, , l, r] = ganttTimeline?.containerRange!;
-    const { width: cellWidth } =
-      this.timelineCell.ganttTimeline?.gantt?.styles?.cell!;
 
     const [offsetLeft] = [l - cellBeginCount, r - cellFinishCount];
     const styles = {
       display: offsetLeft > 0 ? "none" : "block",
     };
 
-    const rightRange =
-      (this.timelineCell?.mergeTimeline?.cellFinishCount ?? 0) * cellWidth;
-
     this.mousemoveOffset?.mousemove?.updateConfig({
-      range: [, , , rightRange],
+      range: this.getMousemoveRange(),
     });
 
     updateElementStyles(this.element!, styles);

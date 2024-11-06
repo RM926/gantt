@@ -14,7 +14,7 @@ const MouseMoveTest = () => {
   useEffect(() => {
     if (mouseMoveGridRef.current) return;
     mouseMoveGridRef.current = new MouseMove({
-      moveStep: [60, 60],
+      moveStep: [10, 60],
       offsetRange: true,
       range: [0, undefined, 0, undefined],
       container: document.querySelector("#grid") as HTMLElement,
@@ -52,7 +52,7 @@ const MouseMoveTest = () => {
         if (type === "x") {
           setPosition((pre) => {
             const [x, y] = pre;
-            return [x + changeStep * 60, y];
+            return [x + changeStep * 10, y];
           });
         } else if (type === "y") {
           setPosition((pre) => {

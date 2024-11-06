@@ -40,18 +40,14 @@ class TimelineCellRightDrag {
   }
 
   initMousemoveOffset() {
-    const { width: cellWidth } =
-      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
-    const leftRange =
-      (this.timelineCell?.mergeTimeline?.cellBeginCount ?? 0) * cellWidth;
     const _that = this;
     this.mousemoveOffset = new MousemoveOffset({
       target: this.element,
       container: _that.timelineCell?.ganttTimeline?.container,
       girdContainer: _that.timelineCell?.ganttTimeline?.innerContainer,
-      moveStep: [cellWidth],
-      offsetRange: true,
-      range: [, , leftRange],
+      moveStep: _that.getMousemoveStep(_that),
+      offsetRange: false,
+      range: _that.getMousemoveRange(),
       mouseStatusChange(status) {
         const moving =
           status === MouseStatus.DOWN || status === MouseStatus.MOVE;
@@ -86,23 +82,34 @@ class TimelineCellRightDrag {
     });
   }
 
+  getMousemoveRange() {
+    if (!this?.timelineCell) return;
+    const { width: cellWidth } =
+      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const leftRange =
+      ((this.timelineCell?.mergeTimeline?.cellBeginCount ?? 0) + 1) * cellWidth;
+    return [, , leftRange];
+  }
+
+  getMousemoveStep(it: TimelineCellRightDrag) {
+    const { width: cellWidth } =
+      this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    return [cellWidth];
+  }
+
   update() {
     if (!this.timelineCell) return;
     const { mergeTimeline, ganttTimeline } = this.timelineCell;
-    const { cellBeginCount, cellFinishCount } = mergeTimeline;
-    const [, , l, r] = ganttTimeline?.containerRange!;
-    const { width: cellWidth } =
-      this.timelineCell.ganttTimeline?.gantt?.styles?.cell!;
-    const [, offsetRight] = [l - cellBeginCount, r - cellFinishCount];
+    const { cellFinishCount } = mergeTimeline;
+    const [, , , r] = ganttTimeline?.containerRange!;
+
+    const [, offsetRight] = [, r - cellFinishCount];
     const styles = {
       display: offsetRight < 0 ? "none" : "block",
     };
 
-    const leftRange =
-      (this.timelineCell?.mergeTimeline?.cellBeginCount ?? 0) * cellWidth;
-
     this.mousemoveOffset?.mousemove?.updateConfig({
-      range: [, , leftRange],
+      range: this.getMousemoveRange(),
     });
 
     updateElementStyles(this.element!, styles);

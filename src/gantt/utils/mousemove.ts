@@ -23,6 +23,9 @@ export type MousemoveConfig = {
   target?: HTMLElement;
   offsetRange?: boolean;
   moveStep?: number[];
+  /**
+   *  top bottom left right
+   */
   range?: (number | undefined)[];
   moveStepChange?: (params: MousemoveChangeParams) => void;
   mouseStatusChange?: (status: MouseStatus) => void;
@@ -143,7 +146,6 @@ class Mousemove {
         width - targetPositionX,
       ];
     }
-
     const currentMatrix = this.getCurrentMatrix();
     this.lastMatrix = currentMatrix;
   };
@@ -215,6 +217,12 @@ class Mousemove {
 
     const idealCurrentX = this.getRangeValue([l, r], currentX);
     const idealCurrentY = this.getRangeValue([t, b], currentY);
+    // console.log(
+    //   "idealCurrentX",
+    //   [l, r],
+    //   currentX,
+    //   idealCurrentX
+    // );
 
     return [
       Math.floor(idealCurrentX / moveStepX),
