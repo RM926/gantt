@@ -121,6 +121,7 @@ class TimelineCellVisualContent {
   getMousemoveStep(it: TimelineCellVisualContent) {
     const { height: cellHeight, width: cellWidth } =
       this.visualCell?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    return [cellWidth, cellHeight];
     return [1, cellHeight];
   }
 

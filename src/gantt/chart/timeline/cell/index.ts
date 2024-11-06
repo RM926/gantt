@@ -10,7 +10,6 @@ import {
 } from "../../../utils/document";
 import TimelineCellLeftDrag from "./left_drag";
 import TimelineCellRightDrag from "./right_drag";
-import TimelineCellVisualContent from "./visual";
 import TimelineCellVisual from "./visual";
 
 export type TimelineCellConfig = {

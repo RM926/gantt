@@ -48,6 +48,7 @@ class TimelineCellLeftDrag {
       girdContainer: _that.timelineCell?.ganttTimeline?.innerContainer,
       moveStep: _that.getMousemoveStep(_that),
       range: _that.getMousemoveRange(),
+      offsetRange: false,
       mouseStatusChange(status) {
         const moving =
           status === MouseStatus.DOWN || status === MouseStatus.MOVE;
@@ -103,7 +104,8 @@ class TimelineCellLeftDrag {
   getMousemoveStep(it: TimelineCellLeftDrag) {
     const { width: cellWidth } =
       this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
-    return [cellWidth];
+    return [cellWidth]
+    return [1];
   }
 
   update() {
