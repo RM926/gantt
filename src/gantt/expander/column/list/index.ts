@@ -109,30 +109,11 @@ class ExpanderList {
   updateCellToContainer() {
     // 添加
     this.updateCollectCellId = [];
-    const [t, b] = this.containerRange;
-    const _that = this;
-
-    function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
-      for (const d of mergeTimelineDataSource) {
-        const { top, bottom, children } = d;
-        if (
-          getContainType({
-            contain: [t, b],
-            contained: [top, bottom],
-          }) !== ContainTypeEnum.NONE
-        ) {
-          _that.renderExpanderCell(d);
-          _that.updateCollectCellId?.push(d.id);
-        }
-        if (top > b) return;
-
-        if (children?.length) {
-          renderLoop(children as MergeTimelineDataSource[]);
-        }
-      }
+    for (const d of this.getContainMergeDataSource()) {
+      if (!d) return;
+      this.renderExpanderCell(d);
+      this.updateCollectCellId?.push(d.id);
     }
-
-    renderLoop(this.gantt?.mergeTimelineSourceData!);
   }
 
   removeCellInContainer() {
@@ -150,6 +131,21 @@ class ExpanderList {
         this.cellReuses?.push(cell);
         this.listCellMap.delete(id);
       }
+    });
+  }
+
+  getContainMergeDataSource() {
+    const { mergeSourceDataIdCols, mergeSourceDataMap } = this.gantt!;
+    const containRange = this.getContainerRange();
+    const [t, b] = containRange;
+    return Array.from(
+      new Set(
+        mergeSourceDataIdCols
+          ?.slice(Math.floor(t), Math.ceil(b) + 1)
+          .filter((id) => !!id)
+      )
+    )?.map((id) => {
+      return mergeSourceDataMap?.get(id);
     });
   }
 

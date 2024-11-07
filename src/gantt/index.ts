@@ -76,6 +76,9 @@ export class Gantt {
   mergeTimelineIdRows?: ReturnTransformDataSource["mergeTimelineIdRows"];
   mergeTimelineMap?: ReturnTransformDataSource["mergeTimelineMap"];
 
+  mergeSourceDataMap?: ReturnTransformDataSource["mergeSourceDataMap"];
+  mergeSourceDataIdCols?: ReturnTransformDataSource["mergeSourceDataIdCols"];
+
   timestampLine: TimestampLine[] = [];
   cellGap = BasicCellGap;
   timeRange: string[] = [];
@@ -95,22 +98,21 @@ export class Gantt {
     const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
       this.draw()!;
     this.initData(otherConfig);
-    // return;
     const _that = this;
     // expander
     this.ganttColumns = [
-      // new Column({
-      //   container: expanderElement as HTMLElement,
-      //   gantt: this,
-      //   enhance: this.enhance?.expanderLabel,
-      //   listScrollCallback(e: any) {
-      //     _that.scrollControl({
-      //       source: ScrollControlSource.EXPANDER,
-      //       eventTarge: e?.target,
-      //       position: { y: e?.target?.scrollTop || 0 },
-      //     });
-      //   },
-      // }),
+      new Column({
+        container: expanderElement as HTMLElement,
+        gantt: this,
+        enhance: this.enhance?.expanderLabel,
+        listScrollCallback(e: any) {
+          _that.scrollControl({
+            source: ScrollControlSource.EXPANDER,
+            eventTarge: e?.target,
+            position: { y: e?.target?.scrollTop || 0 },
+          });
+        },
+      }),
       // new Column({
       //   container: expanderElement as HTMLElement,
       //   gantt: this,
@@ -209,16 +211,23 @@ export class Gantt {
     );
 
     if (this.dataSource) {
-      const { mergeTimelineSourceData, mergeTimelineMap, mergeTimelineIdRows } =
-        transformDataSource({
-          dataSource: this.dataSource,
-          cellGap: this.cellGap,
-          timestampLine: this.timestampLine.map((t) => t.value),
-          expandIds: this.expandIds,
-        });
+      const {
+        mergeTimelineSourceData,
+        mergeTimelineMap,
+        mergeTimelineIdRows,
+        mergeSourceDataMap,
+        mergeSourceDataIdCols,
+      } = transformDataSource({
+        dataSource: this.dataSource,
+        cellGap: this.cellGap,
+        timestampLine: this.timestampLine.map((t) => t.value),
+        expandIds: this.expandIds,
+      });
       this.mergeTimelineSourceData = mergeTimelineSourceData;
       this.mergeTimelineIdRows = mergeTimelineIdRows;
       this.mergeTimelineMap = mergeTimelineMap;
+      this.mergeSourceDataMap = mergeSourceDataMap;
+      this.mergeSourceDataIdCols = mergeSourceDataIdCols;
     }
 
     console.log(
@@ -254,7 +263,7 @@ export class Gantt {
     this.ganttCalender?.update();
     this.ganttTimeline?.update();
     this.ganttColumns?.forEach((c) => {
-      c.list?.update();
+      c?.update();
     });
   };
 

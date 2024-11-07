@@ -84,6 +84,11 @@ class Column {
     const c = this?.enhance?.cell || ExpanderListCell;
     return new (c as any)(config);
   }
+
+  update() {
+    this.list?.update();
+    this.header?.update();
+  }
 }
 
 export default Column;

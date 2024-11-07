@@ -223,6 +223,25 @@ export function transformDataSource(payload: {
     }
   }
 
+  const mergeSourceDataMap = new Map<
+    string | number,
+    MergeTimelineDataSource
+  >();
+  const mergeSourceDataIdCols: (number | string)[] = [];
+
+  function patchMergeSourceDataCallback(d: MergeTimelineDataSource) {
+    const { id, top, bottom } = d;
+    mergeSourceDataMap.set(id, d);
+    /**
+     * top 0
+     * bottom 2
+     * mergeSourceDataIdCols push 0和1的位置
+     */
+    for (let position = top; position < bottom; position++) {
+      mergeSourceDataIdCols[position] = id;
+    }
+  }
+
   function loopSourceData(payload: {
     dataSource: GanttSourceData[];
     expandIds?: (number | string)[];
@@ -251,7 +270,6 @@ export function transformDataSource(payload: {
         verticalCurrentRowIdx,
         path: [...(father?.path ?? []), t.id],
       });
-      // const mergeTimelines = [];
 
       const lastVerticalCurrentRowIdx = verticalCurrentRowIdx;
       verticalCurrentRowIdx =
@@ -266,6 +284,8 @@ export function transformDataSource(payload: {
         expandable: !!t.children?.length,
         path: [t.id],
       };
+
+      patchMergeSourceDataCallback(newFather);
 
       if (!father) {
         result.push(newFather);
@@ -305,6 +325,8 @@ export function transformDataSource(payload: {
     mergeTimelineSourceData: renderDataSource,
     mergeTimelineMap,
     mergeTimelineIdRows,
+    mergeSourceDataMap,
+    mergeSourceDataIdCols,
   };
 }
 
