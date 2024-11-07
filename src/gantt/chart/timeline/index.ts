@@ -101,12 +101,16 @@ class GanttTimeline {
   }
 
   changeCell(mergeTimeline: ReturnMergeTimeline) {
-    const { dataSource, mergeTimelineSourceData } = this.gantt!;
+    const { dataSource, mergeSourceDataIdCols, mergeSourceDataMap } =
+      this.gantt!;
+    const { cellTopCount } = mergeTimeline;
     this.gantt?.update({
       dataSource: updateGanttDataSource({
         dataSource: dataSource!,
-        mergeTimelinesSourceData: mergeTimelineSourceData!,
-        returnMergeTimeline: mergeTimeline,
+        downMergeSourceRow: mergeSourceDataMap?.get(
+          mergeSourceDataIdCols?.[cellTopCount] ?? ""
+        ),
+        changeMergeTimeline: mergeTimeline,
       }),
     });
   }

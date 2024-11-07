@@ -16,13 +16,13 @@ const data: GanttSourceData[] = [
         id: "timeline_0_1",
         title: "timeline_0_1",
         startTime: getStartTime(new Date("2024/10/2")),
-        endTime: getStartTime(new Date("2024/10/7")) + 20000,
+        endTime: getStartTime(new Date("2024/10/7")) + oneDayTimeStamp / 2,
       },
       {
         id: "timeline_0_2",
         title: "timeline_0_2",
         startTime: getStartTime(new Date("2024/10/2")),
-        endTime: getStartTime(new Date("2024/10/7")) + 20000,
+        endTime: getStartTime(new Date("2024/10/7")) + oneDayTimeStamp / 2,
       },
     ],
     children: [
@@ -90,7 +90,7 @@ const data: GanttSourceData[] = [
       },
     ],
   },
-  ...new Array(100000).fill(0).map((d, i) => {
+  ...new Array(200000).fill(0).map((d, i) => {
     const ii = i % 20;
     return {
       id: `arr_${i + 4}`,

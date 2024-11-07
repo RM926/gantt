@@ -175,10 +175,10 @@ export function loopTree(tree: Tree[]) {
 
 export function getTreePathTarget<T extends Tree>(
   tree: T[],
-  path: (number | string)[],
+  path?: (number | string)[],
   pathIndex = 0
 ) {
-  const pathId = path[pathIndex ?? 0];
+  const pathId = path?.[pathIndex ?? 0];
   for (let t of tree) {
     // console.log(t.id, t);
     if (t.id === pathId) {
@@ -203,6 +203,7 @@ export function transformDataSource(payload: {
   cellGap: number;
   expandIds?: (number | string)[];
 }) {
+  const start = performance.now();
   let verticalCurrentRowIdx = 0;
 
   const mergeTimelineMap = new Map<string | number, ReturnMergeTimeline>();
@@ -321,6 +322,7 @@ export function transformDataSource(payload: {
     expandIds,
   });
   // console.log("renderDataSource", renderDataSource);
+  console.log(`init time:${performance.now() - start}`);
   return {
     mergeTimelineSourceData: renderDataSource,
     mergeTimelineMap,

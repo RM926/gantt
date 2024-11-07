@@ -13,10 +13,10 @@ import { getTreePathTarget } from "./tree";
 
 export const updateGanttDataSource = (payload: {
   dataSource: GanttSourceData[];
-  mergeTimelinesSourceData: MergeTimelineDataSource[];
-  returnMergeTimeline: ReturnMergeTimeline;
+  downMergeSourceRow?: MergeTimelineDataSource;
+  changeMergeTimeline: ReturnMergeTimeline;
 }) => {
-  const { dataSource, mergeTimelinesSourceData, returnMergeTimeline } = payload;
+  const { dataSource, downMergeSourceRow, changeMergeTimeline } = payload;
 
   const {
     cellTopCount,
@@ -25,30 +25,7 @@ export const updateGanttDataSource = (payload: {
     cellBeginCount,
     path,
     ...timeline
-  } = returnMergeTimeline;
-
-  let downMergeSourceRow: MergeTimelineDataSource;
-
-  function findDownMergeSourceRow(
-    mergeTimelineDataSource: MergeTimelineDataSource[]
-  ) {
-    for (const m of mergeTimelineDataSource) {
-      // console.log(m, "tt");
-      const { top, bottom, id } = m;
-      const isContain = judgeContainType({
-        contain: [top, bottom],
-        contained: [cellTopCount, cellBottomCount],
-        type: ContainTypeEnum.CONTAIN,
-      });
-      // console.log(m, isContain, top, bottom, cellTopCount, cellBottomCount);
-      // todo 递归打断退出不生效，return 只是当前嵌套的调用栈
-      if (isContain) downMergeSourceRow = m;
-      if (m?.children?.length)
-        findDownMergeSourceRow(m.children as MergeTimelineDataSource[]);
-    }
-  }
-
-  findDownMergeSourceRow(mergeTimelinesSourceData);
+  } = changeMergeTimeline
 
   const draftDataSource = JSON.parse(
     JSON.stringify(dataSource)
@@ -63,7 +40,7 @@ export const updateGanttDataSource = (payload: {
   // 删除移动的timelines --> 添加
   if (moveSourceRow?.timelines) {
     moveSourceRow.timelines = moveSourceRow?.timelines?.filter(
-      (t) => t.id !== returnMergeTimeline.id
+      (t) => t.id !== changeMergeTimeline.id
     );
   }
   if (downSourceRow) {
