@@ -40,6 +40,7 @@ const Page = () => {
           // },
         },
       });
+      console.log(ganttRef.current);
     }
   }, []);
   return (

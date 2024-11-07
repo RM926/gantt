@@ -190,19 +190,38 @@ export function getTreePathTarget<T extends Tree>(
   }
 }
 
+export type ReturnTransformDataSource = ReturnType<typeof transformDataSource>;
 // console.log(getLoopTreePathTarget(treeData, ["1", "1-2", "1-1-1"]));
 // 顺序
 /**
  * 剔除未展开的叶子节点 添加expand,expandable
  * 添加位置信息
  */
-export function getMergeTimelinesSourceData(payload: {
+export function transformDataSource(payload: {
   dataSource: GanttSourceData[];
   timestampLine: number[];
   cellGap: number;
   expandIds?: (number | string)[];
 }) {
   let verticalCurrentRowIdx = 0;
+
+  const mergeTimelineMap = new Map<string | number, ReturnMergeTimeline>();
+  const mergeTimelineIdRows: (string | number)[] | (string | number)[][] = [];
+
+  function patchMergeTimelineCallback(m: ReturnMergeTimeline) {
+    const { id, cellTopCount } = m;
+    mergeTimelineMap.set(id, m);
+    if (!mergeTimelineIdRows[cellTopCount]) {
+      mergeTimelineIdRows[cellTopCount] = id;
+    } else {
+      const row = mergeTimelineIdRows[cellTopCount];
+      if (typeof row === "object") {
+        row.push(id);
+      } else {
+        mergeTimelineIdRows[cellTopCount] = [row, id];
+      }
+    }
+  }
 
   function loopSourceData(payload: {
     dataSource: GanttSourceData[];
@@ -227,6 +246,7 @@ export function getMergeTimelinesSourceData(payload: {
       const mergeTimelines = getMergeTimelines({
         timelines,
         timestampLine,
+        patchMergeTimelineCallback,
         cellGap,
         verticalCurrentRowIdx,
         path: [...(father?.path ?? []), t.id],
@@ -281,7 +301,11 @@ export function getMergeTimelinesSourceData(payload: {
     expandIds,
   });
   // console.log("renderDataSource", renderDataSource);
-  return renderDataSource;
+  return {
+    mergeTimelineSourceData: renderDataSource,
+    mergeTimelineMap,
+    mergeTimelineIdRows,
+  };
 }
 
 // getMergeTimelinesSourceData({

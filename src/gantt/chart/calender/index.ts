@@ -30,6 +30,8 @@ class Calender {
 
   header?: CalenderConfig["header"];
   list?: CalenderConfig["list"];
+
+  
   listScrollCallback: CalenderConfig["listScrollCallback"];
 
   constructor(config: CalenderConfig) {
@@ -86,6 +88,11 @@ class Calender {
   createCell(config: CalenderListCellConfig): CalenderListCell {
     const c = this?.enhance?.cell || CalenderListCell;
     return new (c as any)(config);
+  }
+
+  update(){
+    this.list?.update();
+    this.header?.update();
   }
 }
 

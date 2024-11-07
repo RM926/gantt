@@ -121,7 +121,7 @@ class GanttTimeline {
     }
   }
 
-  removeCellInContainer() {
+  private removeCellInContainer() {
     this.timelineCellMap.forEach((cell) => {
       if (
         (!this.judgeContain(cell.mergeTimeline, this.containerRange) ||
@@ -139,7 +139,7 @@ class GanttTimeline {
     });
   }
 
-  renderTimeline(mergeTimeline: ReturnMergeTimeline) {
+  private renderTimeline(mergeTimeline: ReturnMergeTimeline) {
     const { id } = mergeTimeline;
 
     const oldCell = this.timelineCellMap.get(id);
@@ -166,32 +166,36 @@ class GanttTimeline {
     }
   }
 
-  updateCellToContainer() {
-    const [, b] = this.containerRange;
+  private updateCellToContainer() {
     this.updateCollectCellId = [];
     const _that = this;
-    function renderLoop(mergeTimelineDataSource: MergeTimelineDataSource[]) {
-      for (const d of mergeTimelineDataSource) {
-        const { mergeTimelines, children, top } = d;
-        // console.log(mergeTimelines, "mergeTimelines");
-        mergeTimelines.forEach((mergeTimeline) => {
-          mergeTimeline.forEach((m) => {
-            // console.log(m, "m");
-            if (_that.judgeContain(m, _that.containerRange)) {
-              _that.updateCollectCellId?.push(m.id);
-              _that.renderTimeline(m);
-            }
-            if (top > b) return;
-          });
-        });
-
-        if (children?.length) {
-          renderLoop(children as MergeTimelineDataSource[]);
-        }
-      }
+    for (const m of this.getContainMergeTimeline() ?? []) {
+      _that.updateCollectCellId?.push(m.id);
+      _that.renderTimeline(m);
     }
+  }
 
-    renderLoop(this.gantt?.mergeTimelineSourceData ?? []);
+  private getContainMergeTimeline() {
+    const { mergeTimelineIdRows, mergeTimelineMap } = this.gantt!;
+    const containRange = this.getContainerRange();
+    const [t, b] = containRange;
+    return mergeTimelineIdRows
+      ?.slice(Math.floor(t), Math.ceil(b) + 1)
+      .reduce((ms, id) => {
+        if (typeof id !== null) {
+          if (typeof id === "object") {
+            id.forEach((d) => {
+              const m = mergeTimelineMap?.get(d);
+              if (m) ms.push(m);
+            });
+          } else {
+            const m = mergeTimelineMap?.get(id);
+            if (m) ms.push(m);
+          }
+        }
+        return ms;
+      }, [] as ReturnMergeTimeline[])
+      .filter((m) => this.judgeContain(m, containRange));
   }
 
   update(payload?: { updateInner?: boolean }) {
@@ -202,7 +206,7 @@ class GanttTimeline {
     this.removeCellInContainer();
   }
 
-  getContainerRange(): number[] {
+  private getContainerRange(): number[] {
     if (!this.container) return [];
     const { scrollLeft = 0, scrollTop = 0 } = this.container;
     const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell!;

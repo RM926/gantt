@@ -158,20 +158,25 @@ export type ReturnMergeTimeline = GanttSourceDataTimeline & {
 
 /** 合并没有重叠日期到同一行 */
 export const getMergeTimelines = (payload: {
-  timelines: GanttSourceDataTimeline[];
+  timelines?: GanttSourceDataTimeline[];
   timestampLine: number[];
+  patchMergeTimelineCallback?: (mergeTimeline: ReturnMergeTimeline) => void;
   /** 上一行数据的垂直方向的行数 */
   verticalCurrentRowIdx: number;
   cellGap: number;
   path: (string | number)[];
 }): ReturnMergeTimeline[][] => {
-  const { timelines, timestampLine, verticalCurrentRowIdx, cellGap, path } =
-    payload;
+  const {
+    timelines,
+    timestampLine,
+    verticalCurrentRowIdx,
+    cellGap,
+    path,
+    patchMergeTimelineCallback,
+  } = payload;
   const currentBeginTime = timestampLine[0];
 
   const mergeTimelinesArray: ReturnMergeTimeline[][] = [];
-
-  const currentDiskIdx = 0;
 
   /** 找到单个数据位于的行数 */
   function findFillDiskArrayIndex(params: {
@@ -219,7 +224,7 @@ export const getMergeTimelines = (payload: {
       cellBottomCount: topIdx + 1,
       path,
     };
-
+    patchMergeTimelineCallback?.(newRow);
     if (idx === -1) {
       mergeTimelinesArray.push([newRow]);
     } else {

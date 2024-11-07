@@ -7,6 +7,7 @@ import CalenderListCell, { CalenderListCellConfig } from "./cell";
 import Calender from "..";
 import ResizeObserverDom from "../../../utils/resize-observer-dom";
 import { updateElementStyles } from "../../../utils";
+import { TimestampLine } from "../../../../gantt/index.d";
 
 type ListConfig = {
   container: HTMLElement;
@@ -102,45 +103,44 @@ class CalenderList {
     this.removeCellInContainer();
   }
 
+  renderCell(timestampLine: TimestampLine) {
+    const { id } = timestampLine;
+    const oldExpanderCell = this.listCellMap.get(id);
+    if (oldExpanderCell) {
+      oldExpanderCell.update({
+        timestamp: timestampLine,
+      });
+    } else {
+      let calenderCell = this.cellReuses?.shift();
+      if (calenderCell) {
+        calenderCell.update({ timestamp: timestampLine });
+        this.listCellMap.set(id, calenderCell);
+      } else {
+        calenderCell = this.calender?.createCell({
+          timestamp: timestampLine,
+          calenderList: this,
+        })!;
+        this.listCellMap.set(id, calenderCell);
+        this.innerContainer?.appendChild(calenderCell.cellElement!);
+        calenderCell.update();
+      }
+    }
+  }
+
   updateCellToContainer() {
     const [, , l, r] = this.containerRange;
     this.updateCollectCellId = [];
-    if (this?.gantt?.timestampLine) {
-      for (let i = 0; i < this.gantt?.timestampLine?.length; i++) {
-        const { left, right, id } = this.gantt?.timestampLine[i];
-
-        if (
-          getContainType({
-            contain: [l, r],
-            contained: [left, right],
-          }) !== ContainTypeEnum.NONE
-        ) {
-          this.updateCollectCellId?.push(id);
-          const oldExpanderCell = this.listCellMap.get(id);
-          if (oldExpanderCell) {
-            oldExpanderCell.update({
-              timestamp: this.gantt?.timestampLine[i],
-            });
-            continue;
-          } else {
-            let calenderCell = this.cellReuses?.shift();
-            if (calenderCell) {
-              calenderCell.update({ timestamp: this.gantt?.timestampLine[i] });
-              this.listCellMap.set(id, calenderCell);
-            } else {
-              calenderCell = this.calender?.createCell({
-                timestamp: this.gantt?.timestampLine[i],
-                calenderList: this,
-              })!;
-              this.listCellMap.set(id, calenderCell);
-              this.innerContainer?.appendChild(calenderCell.cellElement!);
-              calenderCell.update();
-            }
-          }
-        }
-        if (i >= r) return;
-      }
+    for (const t of this.getContainTimestampLine()) {
+      this.updateCollectCellId?.push(t.id);
+      this.renderCell(t);
     }
+  }
+
+  getContainTimestampLine() {
+    const { timestampLine } = this.gantt!;
+    const containRange = this.getContainerRange();
+    const [, , l, r] = containRange;
+    return timestampLine?.slice(Math.floor(l), Math.ceil(r) + 1);
   }
 
   getContainerRange(): number[] {
