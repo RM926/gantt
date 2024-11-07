@@ -24,7 +24,7 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        timeRange: ["2024/9/29", "2024/12/20"],
+        timeRange: ["2024/9/29", "2025/12/20"],
         enhance: {
           timeline: {
             // todo TS类型
@@ -35,9 +35,9 @@ const Page = () => {
           // expanderLabel: {
           //   cell: TExpanderListCell as any,
           // },
-          // calender: {
-          //   cell: TCalenderListCell as any,
-          // },
+          calender: {
+            // cell: TCalenderListCell as any,
+          },
         },
       });
       console.log(ganttRef.current);

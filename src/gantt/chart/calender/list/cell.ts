@@ -49,13 +49,12 @@ class CalenderListCell {
     this.updateRender(this);
   }
 
-  updateRender(it: CalenderListCell) {}
-
-  render(it: CalenderListCell) {
-    const div = document.createElement("div");
-    div.innerHTML = this.timestamp?.value + "";
-    this.cellElement?.append(div);
+  updateRender(it: CalenderListCell) {
+    if (!this?.cellElement) return;
+    this.cellElement.innerHTML = JSON.stringify(this.timestamp?.value);
   }
+
+  render(it: CalenderListCell) {}
 
   hiddenElement() {
     if (!this?.cellElement) return;

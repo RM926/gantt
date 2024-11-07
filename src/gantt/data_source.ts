@@ -84,7 +84,7 @@ const data: GanttSourceData[] = [
       },
     ],
   },
-  ...new Array(10).fill(0).map((d, i) => {
+  ...new Array(100000).fill(0).map((d, i) => {
     const ii = i % 20;
     return {
       id: `arr_${i + 4}`,
