@@ -24,7 +24,17 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        timeRange: ["2024/9/29", "2025/12/20"],
+        timeRange: ["2024/10/1", "2025/10/1"],
+        styles: {
+          cell: {
+            height: 40,
+            width: 50,
+          },
+        },
+        /**
+         *  每个class都有对应的render(调用一次) updateRender(滚动触发)来触发更新视图
+         *  gantt渲染了每个组件的容器位置，填充的内容如下进行自定义
+         */
         enhance: {
           timeline: {
             // todo TS类型
@@ -32,11 +42,11 @@ const Page = () => {
             // cellContent: TTimelineCellContent as any,
             visualContent: TTimelineCellVisualContent as any,
           },
-          // expanderLabel: {
-          //   cell: TExpanderListCell as any,
-          // },
+          expanderLabel: {
+            cell: TExpanderListCell as any,
+          },
           calender: {
-            // cell: TCalenderListCell as any,
+            cell: TCalenderListCell as any,
           },
         },
       });

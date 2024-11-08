@@ -134,12 +134,6 @@ const TimelineCellRender = (props: { mergeTimeline: ReturnMergeTimeline }) => {
 
 export class THeader extends ExpanderHeader {
   root?: any;
-  constructor(config: ExpanderHeaderConfig) {
-    super(config);
-    // console.log(this, "this");
-    // this.create();
-    // console.log("ddd");
-  }
 
   render(it: ExpanderHeader) {
     if (!this.root) this.root = createRoot(it.container!);
@@ -149,9 +143,6 @@ export class THeader extends ExpanderHeader {
 
 export class TExpanderListCell extends ExpanderListCell {
   root?: any;
-  constructor(config: ExpanderListCellConfig) {
-    super(config);
-  }
 
   // 覆盖原来的内容
   render(it: ExpanderListCell) {
@@ -168,10 +159,6 @@ export class TExpanderListCell extends ExpanderListCell {
 
 export class TCalenderListCell extends CalenderListCell {
   root?: any;
-  constructor(config: CalenderListCellConfig) {
-    super(config);
-  }
-
   render() {}
 
   updateRender(it: CalenderListCell): void {
@@ -183,9 +170,6 @@ export class TCalenderListCell extends CalenderListCell {
 
 export class TTimelineListCell extends TimelineCell {
   root?: any;
-  constructor(config: TimelineCellConfig) {
-    super(config);
-  }
 
   createSub() {}
 
@@ -198,10 +182,6 @@ export class TTimelineListCell extends TimelineCell {
 
 export class TTimelineCellContent extends TimelineCellContent {
   root?: any;
-  constructor(config: TimelineCellContentConfig) {
-    super(config);
-  }
-
   // 首次渲染的内容
   render(it: TimelineCellContent) {}
 
@@ -214,12 +194,17 @@ export class TTimelineCellContent extends TimelineCellContent {
 }
 export class TTimelineCellVisualContent extends TimelineCellVisualContent {
   root?: any;
-  constructor(config: TimelineCellVisualContentConfig) {
-    super(config);
-  }
 
   // 首次渲染的内容
   render(it: TimelineCellVisualContent) {}
+
+  // 移动的步长
+  getMousemoveStep(it: TimelineCellVisualContent): number[] {
+    const y =
+      it.visualCell?.timelineCell?.ganttTimeline?.gantt?.styles?.cell?.height ??
+      0;
+    return [1, y];
+  }
 
   // 创建新的内容
   updateRender(it: TimelineCellVisualContent) {

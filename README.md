@@ -1,4 +1,4 @@
-![example](https://raw.githubusercontent.com/RM926/gantt/refs/heads/master/src/images/example.png)
+![example](https://raw.githubusercontent.com/RM926/gantt/refs/heads/master/src/images/example2.png)
 ![code](https://raw.githubusercontent.com/RM926/gantt/refs/heads/master/src/images/code.png)
 
 ## Feature
