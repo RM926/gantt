@@ -26,6 +26,16 @@ const Page = () => {
         dataSource: data,
         expandIds: ["1"],
         timeRange: ["2024/10/1", "2024/10/29"],
+        styles: {
+          cell: {
+            height: 40,
+            width: 50,
+          },
+        },
+        /**
+         *  每个class都有对应的render(调用一次) updateRender(滚动触发)来触发更新视图
+         *  gantt渲染了每个组件的容器位置，填充的内容如下进行自定义
+         */
         enhance: {
           timeline: {
             // todo TS类型
