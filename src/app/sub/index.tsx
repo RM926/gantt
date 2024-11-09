@@ -16,8 +16,10 @@ import ExpanderListCell, {
   ExpanderListCellConfig,
 } from "@/gantt/expander/column/list/cell";
 import { ReturnMergeTimeline } from "@/gantt/utils";
+import { method } from "lodash";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
+import { createApp } from "vue/dist/vue.esm-bundler.js";
 
 const App = (props: { a: number }) => {
   const [count, setCount] = useState(1);
@@ -165,7 +167,65 @@ export class TExpanderListCell extends ExpanderListCell {
     this.root.render(<ExpanderListCellRender expanderListCell={it} />);
   }
 }
+export class TVueExpanderListCell extends ExpanderListCell {
+  app?: any;
 
+  // 覆盖原来的内容
+  render(it: ExpanderListCell) {}
+
+  updateRender(it: ExpanderListCell): void {
+    if (this.app) this.app.unmount();
+    const { update, expandIds = [] } = it?.expanderList?.gantt ?? {};
+    const {
+      id,
+      expand,
+      expandable,
+      title,
+      path = [],
+    } = it?.mergeTimelineDataSource ?? {};
+    console.log(expand, expandable);
+    this.app = createApp({
+      data() {
+        return {
+          title,
+          expand,
+          expandable,
+        };
+      },
+      methods: {
+        click: () => {
+          if (!expandable) return;
+          const newExpandIds = expand
+            ? expandIds.filter((d) => {
+                return d !== id;
+              })
+            : [...expandIds, id!];
+          console.log(newExpandIds);
+          update?.({
+            expandIds: newExpandIds,
+          });
+        },
+      },
+
+      template: `<div @click="click">
+        <div>{{title}}</div>
+          <div v-if="expandable">
+            <div v-if="expand">close</div>
+            <div v-else>open</div>
+          </div>
+          <div v-else></div>
+      </div>`,
+    });
+
+    this.app.mount(this.cellElement);
+  }
+
+  // // 创建新的内容
+  // updateRender(it: ExpanderListCell) {
+  //   if (!this.root) this.root = createRoot(it.cellElement!);
+  //   this.root.render(<ExpanderListCellRender expanderListCell={it} />);
+  // }
+}
 export class TCalenderListCell extends CalenderListCell {
   root?: any;
   constructor(config: CalenderListCellConfig) {

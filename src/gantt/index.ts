@@ -10,6 +10,7 @@ import {
 import {
   GanttSourceData,
   MergeTimelineDataSource,
+  Styles,
   TimestampLine,
 } from "./index.d";
 import "./index.css";
@@ -17,7 +18,7 @@ import "./index.line.css";
 import { getTimestampLineByTimeRange } from "./utils/merge";
 import { getTimeRangeTime, getTimestampLines } from "./utils/merge";
 import Column from "./expander/column";
-import { getRandomClass } from "./utils/document";
+import { getRandomClass, updateElementStyles } from "./utils/document";
 import GanttTimeline from "./chart/timeline";
 import Calender from "./chart/calender";
 import ExpanderHeader from "./expander/column/header";
@@ -32,6 +33,7 @@ import TimelineCellRightDrag from "./chart/timeline/cell/right_drag";
 import TimelineCellVisualContent from "./chart/timeline/cell/visual";
 import { TimelineCellLeftRange } from "./chart/timeline/cell/visual/left_range";
 import { TimelineCellRightRange } from "./chart/timeline/cell/visual/right_range";
+import ResizeObserverDom from "./utils/resize-observer-dom";
 
 export enum ScrollControlSource {
   EXPANDER,
@@ -45,7 +47,7 @@ export type GanttConfig = {
   cellGap?: number;
   timeRange?: string[];
   expandIds?: (string | number)[];
-  styles?: Partial<typeof BasicStyles>;
+  styles?: Styles;
   enhance?: Partial<{
     expanderLabel: Partial<{
       header?: ExpanderHeader;
@@ -69,6 +71,8 @@ export type GanttConfig = {
 
 export class Gantt {
   container: GanttConfig["container"];
+  chartElement?: HTMLElement;
+  ganttTimelineElement?: HTMLElement;
 
   dataSource?: GanttConfig["dataSource"];
   mergeTimelineSourceData?: MergeTimelineDataSource[];
@@ -81,8 +85,8 @@ export class Gantt {
 
   timestampLine: TimestampLine[] = [];
   cellGap = BasicCellGap;
-  timeRange: string[] = [];
-  styles: GanttConfig["styles"] = BasicStyles;
+  timeRange?: string[] = [];
+  styles = BasicStyles;
   enhance?: GanttConfig["enhance"];
 
   expandIds?: (string | number)[];
@@ -91,14 +95,24 @@ export class Gantt {
   ganttCalender?: Calender;
   ganttTimeline?: GanttTimeline;
 
+  isAutoCellWidth = false;
+
   constructor(config: GanttConfig) {
     const { container, enhance, ...otherConfig } = config;
     if (container) this.container = container;
     if (enhance) this.enhance = enhance;
-    const { expanderElement, ganttCalenderElement, ganttTimelineElement } =
-      this.draw()!;
+    const {
+      expanderElement,
+      ganttCalenderElement,
+      chartElement,
+      ganttTimelineElement,
+    } = this.draw()!;
+    this.chartElement = chartElement as HTMLElement;
+    this.ganttTimelineElement = ganttTimelineElement as HTMLElement;
     this.initData(otherConfig);
+    this.initChartLayout({ styles: otherConfig.styles });
     const _that = this;
+
     // expander
     this.ganttColumns = [
       new Column({
@@ -154,6 +168,7 @@ export class Gantt {
         });
       },
     });
+    this.ganttTimeline?.overflowHidden(this.isAutoCellWidth);
   }
 
   draw() {
@@ -191,11 +206,10 @@ export class Gantt {
     };
   }
 
-  initData(config: Omit<GanttConfig, "container">) {
-    const { dataSource, cellGap, styles, timeRange, expandIds } = config;
+  initData(config: Omit<GanttConfig, "container" | "styles">) {
+    const { dataSource, cellGap, timeRange, expandIds } = config;
     if (dataSource) this.dataSource = dataSource;
     if (cellGap) this.cellGap = cellGap;
-    if (styles) this.styles = { ...this.styles, ...styles };
     if (timeRange) this.timeRange = timeRange;
     if (expandIds) this.expandIds = expandIds;
     this.timestampLine = getTimestampLines(
@@ -210,7 +224,7 @@ export class Gantt {
       })
     );
 
-    if (this.dataSource) {
+    if (dataSource || cellGap || expandIds) {
       const {
         mergeTimelineSourceData,
         mergeTimelineMap,
@@ -218,7 +232,7 @@ export class Gantt {
         mergeSourceDataMap,
         mergeSourceDataIdCols,
       } = transformDataSource({
-        dataSource: this.dataSource,
+        dataSource: this.dataSource ?? [],
         cellGap: this.cellGap,
         timestampLine: this.timestampLine.map((t) => t.value),
         expandIds: this.expandIds,
@@ -230,11 +244,53 @@ export class Gantt {
       this.mergeSourceDataIdCols = mergeSourceDataIdCols;
     }
 
-    console.log(
-      this.dataSource,
-      this.mergeTimelineSourceData,
-      "mergeTimelinesSourceData"
+    // console.log(
+    //   this.dataSource,
+    //   this.mergeTimelineSourceData,
+    //   "mergeTimelinesSourceData"
+    // );
+  }
+
+  /**
+   * 1.处理styles字段
+   * 2.chart容器resize自适应
+   */
+  initChartLayout(config?: { styles?: Styles }) {
+    const _that = this;
+    const { styles } = config ?? {};
+    const hasSetAutoCellWidth =
+      styles?.cell?.width === "auto" && !!styles?.cell;
+    if (hasSetAutoCellWidth) {
+      this.isAutoCellWidth = true;
+    }
+    const isDefiniteCellWidth = typeof styles?.cell?.width === "number";
+    if (isDefiniteCellWidth) {
+      this.isAutoCellWidth = false;
+    }
+
+    /**
+     * 首次渲染this.ganttTimeline没有值,所以在初始化的时候调用此方法
+     * 这里的调用是为了后续的更新
+     */
+    this.ganttTimeline?.overflowHidden(
+      this.isAutoCellWidth && !isDefiniteCellWidth
     );
+
+    if (styles) {
+      this.styles = { ...this.styles, ...styles } as typeof BasicStyles;
+    }
+
+    function updateCellWidth() {
+      if (_that.isAutoCellWidth) {
+        const { width } = _that.chartElement?.getBoundingClientRect()!;
+        _that.styles.cell!.width = width / _that.timestampLine?.length;
+      }
+    }
+    // updateCellWidth();
+    new ResizeObserverDom(this.chartElement as HTMLElement).observerSize(() => {
+      updateCellWidth();
+      _that.updateRender();
+    });
   }
 
   scrollControl(payload: {
@@ -260,12 +316,18 @@ export class Gantt {
 
   update = (config: Omit<GanttConfig, "container">) => {
     this.initData(config);
+    const { styles } = config;
+    this.initChartLayout({ styles });
+    this.updateRender();
+  };
+
+  updateRender() {
     this.ganttCalender?.update();
     this.ganttTimeline?.update();
     this.ganttColumns?.forEach((c) => {
       c?.update();
     });
-  };
+  }
 
   getMergeTimelinesRowCount(
     mergeTimelineDataSource?: MergeTimelineDataSource,

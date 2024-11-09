@@ -43,9 +43,6 @@ class TimelineCellVisualContent {
   }
 
   private initMousemove() {
-    const { height: cellHeight, width: cellWidth } =
-      this.visualCell?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
-
     const _that = this;
     const _thatTimelineCell = _that.visualCell?.timelineCell;
     this.mousemoveOffset = new MousemoveOffset({
@@ -75,6 +72,7 @@ class TimelineCellVisualContent {
           if (!_thatTimelineCell) return;
           const { endTime, startTime, cellFinishCount, cellBeginCount } =
             _thatTimelineCell.mergeTimeline;
+          const { width: cellWidth } = _that.getStylesCell();
           const cellGap = _thatTimelineCell.ganttTimeline?.gantt?.cellGap!;
           // moveStepX
           const [moveStepX] = _that.getMousemoveStep(_that);
@@ -110,24 +108,27 @@ class TimelineCellVisualContent {
 
   getMousemoveRange() {
     if (!this.visualCell?.timelineCell) return;
-    const { height: cellHeight } =
-      this.visualCell.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const { height } = this.getStylesCell();
     const bottomRange =
       (this.visualCell.timelineCell?.ganttTimeline?.gantt?.getMergeTimelinesRowCount() ??
-        0) * cellHeight;
+        0) * height;
     return [0, bottomRange];
   }
 
   getMousemoveStep(it: TimelineCellVisualContent) {
-    const { height: cellHeight, width: cellWidth } =
-      this.visualCell?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
-    return [cellWidth, cellHeight];
-    return [1, cellHeight];
+    const { width, height } = this.getStylesCell();
+    return [width, height];
+    return [1, height];
+  }
+
+  getStylesCell() {
+    return this.visualCell?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
   }
 
   update() {
     this.mousemoveOffset?.mousemove?.updateConfig({
       range: this.getMousemoveRange(),
+      moveStep: this.getMousemoveStep(this),
     });
     this.updateRender(this);
   }

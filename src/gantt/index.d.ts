@@ -15,6 +15,17 @@ export type GanttSourceData = {
 
 type TimeRangeDate = string | number | Date;
 
+type Styles = {
+  cell?: {
+    width?: number | "auto";
+    height?: number;
+  };
+  header?: {
+    width?: number;
+    height?: number;
+  };
+};
+
 export type MergeTimelineDataSource = Omit<GanttSourceData, "children"> & {
   path: (number | string)[];
   top: number;

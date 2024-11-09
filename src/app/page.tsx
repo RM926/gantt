@@ -7,6 +7,7 @@ import {
   TTimelineCellContent,
   TTimelineCellVisualContent,
   TTimelineListCell,
+  TVueExpanderListCell,
 } from "@/app/sub";
 import { useEffect, useRef } from "react";
 import { loopTree, oneDayTimeStamp } from "@/gantt/utils";
@@ -24,7 +25,7 @@ const Page = () => {
         container: containerRef.current,
         dataSource: data,
         expandIds: ["1"],
-        timeRange: ["2024/9/29", "2025/12/20"],
+        timeRange: ["2024/10/1", "2024/10/29"],
         enhance: {
           timeline: {
             // todo TS类型
@@ -32,11 +33,11 @@ const Page = () => {
             // cellContent: TTimelineCellContent as any,
             visualContent: TTimelineCellVisualContent as any,
           },
-          // expanderLabel: {
-          //   cell: TExpanderListCell as any,
-          // },
+          expanderLabel: {
+            cell: TExpanderListCell as any,
+          },
           calender: {
-            // cell: TCalenderListCell as any,
+            cell: TCalenderListCell as any,
           },
         },
       });
@@ -45,6 +46,58 @@ const Page = () => {
   }, []);
   return (
     <div>
+      <div style={{ display: "flex", gap: 5, marginBottom: 5 }}>
+        <button
+          onClick={() => {
+            ganttRef.current?.update({
+              cellGap: oneDayTimeStamp / 24,
+            });
+          }}
+        >
+          changeCellGap(hour)
+        </button>
+        <button
+          onClick={() => {
+            ganttRef.current?.update({
+              cellGap: oneDayTimeStamp,
+            });
+          }}
+        >
+          changeCellGap(day)
+        </button>
+        <button
+          onClick={() => {
+            ganttRef.current?.update({
+              styles: {
+                cell: {
+                  width: "auto",
+                  height: 30,
+                },
+              },
+            });
+          }}
+        >
+          autoCellWidth
+        </button>
+        <button
+          onClick={() => {
+            ganttRef.current?.update({
+              styles: {
+                cell: {
+                  width: 50,
+                  height: 40,
+                },
+                header: {
+                  height: 100,
+                },
+              },
+            });
+          }}
+        >
+          changeStyles
+        </button>
+      </div>
+
       {/* <MouseMoveStepTest />  */}
       {/* <Scroll /> */}
       <div

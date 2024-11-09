@@ -9,7 +9,7 @@ const data: GanttSourceData[] = [
       {
         id: "timeline_0_0",
         title: "timeline_0_0",
-        startTime: getStartTime(new Date("2024/9/29")),
+        startTime: getStartTime(new Date("2024/10/1")),
         endTime: getEndTime(new Date("2024/10/1")),
       },
       {
@@ -49,6 +49,20 @@ const data: GanttSourceData[] = [
                 endTime: getStartTime(new Date("2024/10/10")),
               },
             ],
+            children: [
+              {
+                id: "1-1-1-1",
+                title: "1-1-1-1",
+                timelines: [
+                  {
+                    id: "timeline_1_1_1_1",
+                    title: "timeline_1_1_1_1",
+                    startTime: getStartTime(new Date("2024/10/1")),
+                    endTime: getStartTime(new Date("2024/10/10")),
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -84,33 +98,33 @@ const data: GanttSourceData[] = [
     timelines: [
       {
         title: "timeline_1_4_0",
-        startTime: getStartTime(new Date("2024/9/30")),
-        endTime: getEndTime(new Date("2025/10/1")),
+        startTime: getStartTime(new Date("2024/10/2")),
+        endTime: getEndTime(new Date("2024/10/5")),
         id: "timeline_1_4_0",
       },
     ],
   },
-  ...new Array(200000).fill(0).map((d, i) => {
-    const ii = i % 20;
-    return {
-      id: `arr_${i + 4}`,
-      title: `arr_title${i + 3}`,
-      timelines: [
-        {
-          title: "title",
-          startTime: getStartTime(
-            new Date("2024/9/29").getTime() + ii * oneDayTimeStamp
-            // new Date("2024/9/29")
-          ),
-          endTime: getEndTime(
-            new Date("2024/9/29").getTime() + (ii + 10) * oneDayTimeStamp
-            // new Date("2025/10/29")
-          ),
-          id: `timelines_${i}`,
-        },
-      ],
-    };
-  }),
+  // ...new Array(200000).fill(0).map((d, i) => {
+  //   const ii = i % 20;
+  //   return {
+  //     id: `arr_${i + 4}`,
+  //     title: `arr_title${i + 3}`,
+  //     timelines: [
+  //       {
+  //         title: "title",
+  //         startTime: getStartTime(
+  //           new Date("2024/9/29").getTime() + ii * oneDayTimeStamp
+  //           // new Date("2024/9/29")
+  //         ),
+  //         endTime: getEndTime(
+  //           new Date("2024/9/29").getTime() + (ii + 10) * oneDayTimeStamp
+  //           // new Date("2025/10/29")
+  //         ),
+  //         id: `timelines_${i}`,
+  //       },
+  //     ],
+  //   };
+  // }),
   {
     id: "last",
     title: "last",
@@ -118,7 +132,7 @@ const data: GanttSourceData[] = [
       {
         title: "last_timeline_1_4_0",
         startTime: getStartTime(new Date("2024/9/30")),
-        endTime: getEndTime(new Date("2025/10/1")),
+        endTime: getEndTime(new Date("2024/10/1")),
         id: "last_timeline_1_4_0",
       },
     ],

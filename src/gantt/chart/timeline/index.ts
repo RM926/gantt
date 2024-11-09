@@ -1,13 +1,14 @@
-import { appendClassName, createElement } from "../../utils";
-import { MergeTimelineDataSource } from "../../../gantt/index.d";
+import {
+  appendClassName,
+  createElement,
+  updateElementStyles,
+} from "../../utils";
 import Gantt from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
 import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
 import TimelineCell, { TimelineCellConfig } from "./cell";
 import { GanttTimelineInnerClassName } from "../../constant";
 import ScrollOverflow from "../../utils/scroll_overflow";
-import ResizeObserverDom from "../../utils/resize-observer-dom";
-import { throttle } from "lodash";
 
 type GanttTimelineConfig = {
   container?: HTMLElement;
@@ -59,9 +60,6 @@ class GanttTimeline {
     const _that = this;
     this.scrollOverflow = new ScrollOverflow({
       container: _that.container!,
-    });
-    new ResizeObserverDom(_that.container!).observerSize(() => {
-      _that.update();
     });
     this.scrollOverflow.setScrollLock(true);
   }
@@ -215,7 +213,6 @@ class GanttTimeline {
     const { scrollLeft = 0, scrollTop = 0 } = this.container;
     const { height: cellHeight, width: cellWidth } = this.gantt!.styles?.cell!;
     const { width, height } = this.container!.getBoundingClientRect() ?? {};
-
     return [
       scrollTop / cellHeight,
       (scrollTop + height) / cellHeight,
@@ -248,6 +245,13 @@ class GanttTimeline {
   createCell(config: TimelineCellConfig): TimelineCell {
     const c = this.enhance?.cell || TimelineCell;
     return new (c as any)(config);
+  }
+
+  overflowHidden(hidden = true) {
+    const containerStyles = {
+      overflowX: hidden ? "hidden" : "auto",
+    };
+    updateElementStyles(this.container!, containerStyles);
   }
 }
 

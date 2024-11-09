@@ -203,7 +203,7 @@ export function transformDataSource(payload: {
   cellGap: number;
   expandIds?: (number | string)[];
 }) {
-  const start = performance.now();
+  // const start = performance.now();
   let verticalCurrentRowIdx = 0;
 
   const mergeTimelineMap = new Map<string | number, ReturnMergeTimeline>();
@@ -322,7 +322,7 @@ export function transformDataSource(payload: {
     expandIds,
   });
   // console.log("renderDataSource", renderDataSource);
-  console.log(`init time:${performance.now() - start}`);
+  // console.log(`init time:${performance.now() - start}`);
   return {
     mergeTimelineSourceData: renderDataSource,
     mergeTimelineMap,

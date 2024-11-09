@@ -65,6 +65,10 @@
   overflow: auto;
 }
 
+.gantt_timeline_inner {
+  overflow: hidden;
+}
+
 .gantt_timeline_cell_left_range,
 .gantt_timeline_cell_right_range {
   width: 30px;

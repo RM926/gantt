@@ -12,7 +12,6 @@ import {
   updateElementStyles,
 } from "../../../utils";
 import { GanttExpanderListInnerClassName } from "../../../constant";
-import ResizeObserverDom from "../../../utils/resize-observer-dom";
 
 type ListConfig = {
   container: HTMLElement;
@@ -43,9 +42,6 @@ class ExpanderList {
     if (scrollCallback) this.scrollCallback = scrollCallback;
     if (column) this.column = column;
     this.drawInnerContainer();
-    new ResizeObserverDom(this.container!).observerSize(() => {
-      this.update();
-    });
     this.registerEvent();
     this.onContainerScroll();
   }

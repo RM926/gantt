@@ -40,8 +40,6 @@ class TimelineCellRightDrag {
   }
 
   initMousemoveOffset() {
-    const { width: cellWidth } =
-      this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
     const _that = this;
     this.mousemoveOffset = new MousemoveOffset({
       target: this.element,
@@ -71,7 +69,7 @@ class TimelineCellRightDrag {
           if (!_that.timelineCell) return;
           const { endTime, cellFinishCount } = _that.timelineCell.mergeTimeline;
           const cellGap = _that.timelineCell.ganttTimeline?.gantt?.cellGap!;
-
+          const { width: cellWidth } = _that.getStylesCell();
           // moveStepX
           const [moveStepX] = _that.getMousemoveStep(_that);
           const timeStep = (cellGap / cellWidth) * moveStepX;
@@ -92,16 +90,14 @@ class TimelineCellRightDrag {
 
   getMousemoveRange() {
     if (!this?.timelineCell) return;
-    const { width: cellWidth } =
-      this.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const { width: cellWidth } = this.getStylesCell();
     const leftRange =
       ((this.timelineCell?.mergeTimeline?.cellBeginCount ?? 0) + 1) * cellWidth;
     return [, , leftRange];
   }
 
   getMousemoveStep(it: TimelineCellRightDrag) {
-    const { width: cellWidth } =
-      this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
+    const { width: cellWidth } = this.getStylesCell();
     return [cellWidth];
     return [1];
   }
@@ -119,10 +115,15 @@ class TimelineCellRightDrag {
 
     this.mousemoveOffset?.mousemove?.updateConfig({
       range: this.getMousemoveRange(),
+      moveStep: this.getMousemoveStep(this),
     });
 
     updateElementStyles(this.element!, styles);
     this.updateRender(this);
+  }
+
+  getStylesCell() {
+    return this?.timelineCell!.ganttTimeline?.gantt?.styles?.cell!;
   }
 
   updateRender(it: TimelineCellRightDrag) {}
