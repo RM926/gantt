@@ -7,7 +7,7 @@ import {
 import { getRandomClass } from "../../utils/document";
 import ExpanderHeader from "./header";
 import ExpanderList from "./list";
-import ExpanderListCell, { ExpanderListCellConfig } from "./list/cell";
+import ExpanderListCell, { type ExpanderListCellConfig } from "./list/cell";
 
 export type ColumnConfig = {
   container: HTMLElement;

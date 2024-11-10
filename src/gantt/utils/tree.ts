@@ -1,11 +1,5 @@
-import {
-  GanttSourceData,
-  GanttSourceDataTimeline,
-  MergeTimelineDataSource,
-} from "../index.d";
-import { data } from "../data_source";
-import { oneDayTimeStamp } from "./date";
-import { getMergeTimelines, ReturnMergeTimeline } from "./merge";
+import type { GanttSourceData, MergeTimelineDataSource } from "../index.d";
+import { getMergeTimelines, type ReturnMergeTimeline } from "./merge";
 
 type Tree = {
   id: string | number;

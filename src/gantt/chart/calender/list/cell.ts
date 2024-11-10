@@ -1,4 +1,4 @@
-import { MergeTimelineDataSource, TimestampLine } from "../../../index.d";
+import type { TimestampLine } from "../../../index.d";
 import CalenderList from "./index";
 import { updateElementStyles } from "../../../utils";
 

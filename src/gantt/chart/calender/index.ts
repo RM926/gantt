@@ -7,7 +7,7 @@ import {
 import { getRandomClass } from "../../utils/document";
 import CalenderHeader from "./header";
 import CalenderList from "./list";
-import CalenderListCell, { CalenderListCellConfig } from "./list/cell";
+import CalenderListCell, { type CalenderListCellConfig } from "./list/cell";
 
 type CalenderConfig = {
   container: HTMLElement;
@@ -31,7 +31,6 @@ class Calender {
   header?: CalenderConfig["header"];
   list?: CalenderConfig["list"];
 
-  
   listScrollCallback: CalenderConfig["listScrollCallback"];
 
   constructor(config: CalenderConfig) {
@@ -75,7 +74,6 @@ class Calender {
     });
   }
 
-
   createList(container: HTMLElement) {
     this.list = new CalenderList({
       container,
@@ -90,7 +88,7 @@ class Calender {
     return new (c as any)(config);
   }
 
-  update(){
+  update() {
     this.list?.update();
     this.header?.update();
   }

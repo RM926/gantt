@@ -5,8 +5,8 @@ import {
 } from "../../utils";
 import Gantt from "../../index";
 import { ContainTypeEnum, getContainType } from "../../utils/contain";
-import { ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
-import TimelineCell, { TimelineCellConfig } from "./cell";
+import { type ReturnMergeTimeline, updateGanttDataSource } from "../../utils/merge";
+import TimelineCell, { type TimelineCellConfig } from "./cell";
 import { GanttTimelineInnerClassName } from "../../constant";
 import ScrollOverflow from "../../utils/scroll_overflow";
 

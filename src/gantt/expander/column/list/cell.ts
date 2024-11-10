@@ -1,7 +1,7 @@
-import { MergeTimelineDataSource } from "../../../index.d";
-import ExpanderList from ".";
+import type { MergeTimelineDataSource } from "../../../index.d";
+import ExpanderList from "./index";
 import { GanttExpanderListCellClassName } from "../../../constant";
-import { updateElementStyles } from "@/gantt/utils";
+import { updateElementStyles } from "../../../utils";
 
 export type ExpanderListCellConfig = {
   mergeTimelineDataSource: MergeTimelineDataSource;

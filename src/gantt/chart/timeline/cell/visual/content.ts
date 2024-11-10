@@ -7,8 +7,6 @@ import {
 import { GanttTimelineCellVisualContentClassName } from "../../../../constant";
 import MousemoveOffset from "../../../../utils/mousemove_offset";
 import { MouseStatus } from "../../../../utils/mousemove";
-import { TimelineCellLeftRange } from "./left_range";
-import { TimelineCellRightRange } from "./right_range";
 import TimelineCellVisual from "./index";
 
 export type TimelineCellVisualContentConfig = {

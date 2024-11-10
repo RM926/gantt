@@ -1,14 +1,12 @@
-import {
+import type {
   GanttSourceData,
   GanttSourceDataTimeline,
   MergeTimelineDataSource,
 } from "../index.d";
 import {
-  ContainTypeEnum,
   getIntersectRange,
-  judgeContainType,
 } from "./contain";
-import { getStartTime, oneDayTimeStamp } from "./date";
+import { getStartTime } from "./date";
 import { getTreePathTarget } from "./tree";
 
 export const updateGanttDataSource = (payload: {

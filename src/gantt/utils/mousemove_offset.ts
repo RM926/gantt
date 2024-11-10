@@ -1,4 +1,4 @@
-import Mousemove, { MousemoveConfig, MouseStatus } from "./mousemove";
+import Mousemove, { type MousemoveConfig, MouseStatus } from "./mousemove";
 import ScrollOffset from "./scroll_offset";
 type MousemoveOffsetConfig = MousemoveConfig & { girdContainer?: HTMLElement };
 class MousemoveOffset {

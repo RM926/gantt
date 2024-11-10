@@ -6,7 +6,7 @@ import {
   updateElementStyles,
 } from "../../../utils";
 import { GanttTimelineCellRightDragClassName } from "../../../constant";
-import Mousemove, { MouseStatus } from "../../../utils/mousemove";
+import { MouseStatus } from "../../../utils/mousemove";
 import MousemoveOffset from "../../../utils/mousemove_offset";
 
 export type TimelineCellRightDragConfig = {

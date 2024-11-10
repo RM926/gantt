@@ -3,10 +3,10 @@ import {
   getContainType,
 } from "../../../../gantt/utils/contain";
 import { Gantt } from "../../../../gantt/index";
-import CalenderListCell, { CalenderListCellConfig } from "./cell";
+import CalenderListCell from "./cell";
 import Calender from "..";
 import { updateElementStyles } from "../../../utils";
-import { TimestampLine } from "../../../../gantt/index.d";
+import type { TimestampLine } from "../../../../gantt/index.d";
 
 type ListConfig = {
   container: HTMLElement;

@@ -1,5 +1,5 @@
 import GanttTimeline from "../index";
-import { ReturnMergeTimeline } from "../../../utils/merge";
+import type { ReturnMergeTimeline } from "../../../utils/merge";
 import { GanttTimelineCellClassName } from "../../../constant";
 import { TimelineCellContent } from "./content";
 import {

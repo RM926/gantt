@@ -5,7 +5,7 @@ import {
 import { Gantt } from "../../../../gantt/index";
 import ExpanderListCell from "./cell";
 import Column from "..";
-import { MergeTimelineDataSource } from "../../../index.d";
+import type { MergeTimelineDataSource } from "../../../index.d";
 import {
   appendClassName,
   createElement,

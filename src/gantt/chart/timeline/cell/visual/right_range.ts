@@ -1,4 +1,3 @@
-import TimelineCell from "./index";
 import { GanttTimelineCellRightRangeClassName } from "../../../../constant";
 import {
   appendChild,
@@ -6,7 +5,6 @@ import {
   createElement,
   updateElementStyles,
 } from "../../../../utils";
-import TimelineCellVisualContent from "./index";
 import TimelineCellVisual from "./index";
 
 export type TimelineCellRightRangeConfig = {

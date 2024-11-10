@@ -6,8 +6,6 @@ import {
 } from "../../../utils/document";
 import TimelineCell from "./index";
 import { GanttTimelineCellContentClassName } from "../../../constant";
-import { MouseStatus } from "../../../utils/mousemove";
-import MousemoveOffset from "../../../utils/mousemove_offset";
 
 export type TimelineCellContentConfig = {
   timelineCell: TimelineCell;

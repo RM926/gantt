@@ -7,7 +7,7 @@ import {
   GanttExpanderClassName,
   GanttTimelineClassName,
 } from "./constant";
-import {
+import type {
   GanttSourceData,
   MergeTimelineDataSource,
   Styles,
@@ -27,7 +27,7 @@ import TimelineCell from "./chart/timeline/cell";
 import CalenderHeader from "./chart/calender/header";
 import CalenderListCell from "./chart/calender/list/cell";
 import { TimelineCellContent } from "./chart/timeline/cell/content";
-import { ReturnTransformDataSource, transformDataSource } from "./utils/tree";
+import { type ReturnTransformDataSource, transformDataSource } from "./utils/tree";
 import TimelineCellLeftDrag from "./chart/timeline/cell/left_drag";
 import TimelineCellRightDrag from "./chart/timeline/cell/right_drag";
 import TimelineCellVisualContent from "./chart/timeline/cell/visual";

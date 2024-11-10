@@ -1,4 +1,4 @@
-import { GanttSourceData } from "./index.d";
+import type { GanttSourceData } from "./index.d";
 import { getEndTime, getStartTime, oneDayTimeStamp } from "./utils/date";
 
 const data: GanttSourceData[] = [
